@@ -1,0 +1,356 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum LinkType {
+  INTERNAL
+  EXTERNAL
+  SECTION
+  CATEGORY
+  POST
+}
+
+model Admin {
+  id           Int            @id @default(autoincrement())
+  fullName     String
+  email        String         @unique
+  passwordHash String
+  avatarId     Int?
+  isActive     Boolean        @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
+  sessions     AdminSession[]
+  posts        Post[]
+  media        Media[]
+  auditLogs    AuditLog[]
+}
+
+model AdminSession {
+  id        Int       @id @default(autoincrement())
+  adminId   Int
+  tokenHash String    @db.VarChar(255)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  admin     Admin     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  @@index([adminId, expiresAt])
+}
+
+model Post {
+  id              Int            @id @default(autoincrement())
+  title           String
+  slug            String         @unique
+  excerpt         String         @db.Text
+  content         String         @db.LongText
+  featuredImageId Int?
+  authorId        Int
+  status          PostStatus     @default(DRAFT)
+  isFeatured      Boolean        @default(false)
+  sourceName      String?
+  sourceUrl       String?
+  seoTitle        String?
+  seoDescription String?         @db.Text
+  scheduledAt     DateTime?
+  publishedAt     DateTime?
+  viewCount       Int            @default(0)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+  author          Admin          @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  featuredImage   Media?         @relation("FeaturedImage", fields: [featuredImageId], references: [id], onDelete: SetNull)
+  categories      PostCategory[]
+  tags            PostTag[]
+  media           PostMedia[]
+  @@index([status, publishedAt])
+  @@index([deletedAt])
+}
+
+model Category {
+  id          Int            @id @default(autoincrement())
+  parentId    Int?
+  name        String
+  slug        String         @unique
+  description String?        @db.Text
+  imageId     Int?
+  sortOrder   Int            @default(0)
+  isActive    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  parent      Category?      @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[]     @relation("CategoryTree")
+  image       Media?         @relation("CategoryImage", fields: [imageId], references: [id], onDelete: SetNull)
+  posts       PostCategory[]
+  sections    HomeSection[]
+  @@index([parentId, sortOrder])
+}
+
+model PostCategory {
+  postId     Int
+  categoryId Int
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  @@id([postId, categoryId])
+}
+
+model Tag {
+  id        Int       @id @default(autoincrement())
+  name      String
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  posts     PostTag[]
+}
+
+model PostTag {
+  postId Int
+  tagId  Int
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  @@id([postId, tagId])
+}
+
+model Media {
+  id                 Int           @id @default(autoincrement())
+  cloudinaryPublicId String        @unique
+  originalName       String
+  secureUrl          String
+  thumbnailUrl       String?
+  resourceType       String
+  format             String
+  width              Int?
+  height             Int?
+  bytes              Int
+  altText            String?
+  caption            String?
+  folder             String
+  uploadedById       Int
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  deletedAt          DateTime?
+  uploadedBy         Admin         @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  featuredPosts      Post[]        @relation("FeaturedImage")
+  categoryImages     Category[]    @relation("CategoryImage")
+  postMedia          PostMedia[]
+  albumMedia         AlbumMedia[]
+}
+
+model PostMedia {
+  postId    Int
+  mediaId   Int
+  sortOrder Int   @default(0)
+  post      Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  media     Media @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+  @@id([postId, mediaId])
+}
+
+model Menu {
+  id        Int        @id @default(autoincrement())
+  name      String
+  location  String     @unique
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  items     MenuItem[]
+}
+
+model MenuItem {
+  id          Int        @id @default(autoincrement())
+  menuId      Int
+  parentId    Int?
+  label       String
+  linkType    LinkType
+  referenceId Int?
+  url         String?
+  target      String     @default("_self")
+  sortOrder   Int        @default(0)
+  isVisible   Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  menu        Menu       @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  parent      MenuItem?  @relation("MenuTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children    MenuItem[] @relation("MenuTree")
+  @@index([menuId, parentId, sortOrder])
+}
+
+model Banner {
+  id          Int      @id @default(autoincrement())
+  title       String
+  subtitle    String?
+  imageUrl    String
+  primaryText String?
+  primaryUrl  String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model HomeSection {
+  id            Int       @id @default(autoincrement())
+  sectionKey    String    @unique
+  title         String
+  componentType String
+  categoryId    Int?
+  displayLimit  Int       @default(6)
+  sortOrder     Int       @default(0)
+  settings      Json
+  isVisible     Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+}
+
+model Announcement {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String   @db.Text
+  startsAt  DateTime @default(now())
+  endsAt    DateTime?
+  isPinned  Boolean  @default(false)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([isActive, startsAt, endsAt])
+}
+
+model MassSchedule {
+  id        Int       @id @default(autoincrement())
+  dayOfWeek Int
+  startTime String
+  massType  String
+  location  String
+  note      String?
+  validFrom DateTime?
+  validTo   DateTime?
+  sortOrder Int       @default(0)
+  isActive  Boolean   @default(true)
+  @@index([dayOfWeek, sortOrder])
+}
+
+model SpecialMass {
+  id        Int      @id @default(autoincrement())
+  title     String
+  startsAt  DateTime
+  location  String
+  note      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  startsAt    DateTime
+  endsAt      DateTime?
+  location    String
+  imageUrl    String?
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([startsAt, isActive])
+}
+
+model Album {
+  id          Int          @id @default(autoincrement())
+  title       String
+  slug        String       @unique
+  description String?      @db.Text
+  coverUrl    String?
+  eventDate   DateTime?
+  isPublished Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  media       AlbumMedia[]
+}
+
+model AlbumMedia {
+  albumId   Int
+  mediaId   Int
+  sortOrder Int   @default(0)
+  album     Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  media     Media @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+  @@id([albumId, mediaId])
+}
+
+model ParishProfile {
+  id          Int      @id @default(autoincrement())
+  name        String
+  diocese     String
+  patronSaint String?
+  description String   @db.LongText
+  address     String
+  phone       String?
+  email       String?
+  mapEmbedUrl String?  @db.Text
+  logoUrl     String?
+  heroUrl     String?
+  facebookUrl String?
+  youtubeUrl  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Clergy {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  title     String
+  bio       String?  @db.Text
+  imageUrl  String?
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Organization {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?  @db.Text
+  leader      String?
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Setting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     Json
+  group     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  adminId    Int?
+  action     String
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+  admin      Admin?   @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  @@index([adminId, createdAt])
+}
