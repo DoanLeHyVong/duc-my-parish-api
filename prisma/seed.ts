@@ -20,8 +20,7 @@ const categoryNames = [
 const slugify = (value: string) =>
   value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D')
     .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const hero =
-  'https://images.unsplash.com/photo-1520637836862-4d197d17c90a?auto=format&fit=crop&w=2000&q=85';
+const hero = '/hero-duc-my-v2.png';
 
 async function main() {
   const admin = await prisma.admin.upsert({
@@ -136,16 +135,15 @@ async function main() {
   });
   await prisma.massSchedule.deleteMany();
   await prisma.massSchedule.createMany({
-    data: [
-      { dayOfWeek: 0, startTime: '05:00', massType: 'Thánh lễ Chúa nhật', location: 'Nhà thờ Đức Mỹ', sortOrder: 1 },
-      { dayOfWeek: 0, startTime: '17:30', massType: 'Thánh lễ Chúa nhật', location: 'Nhà thờ Đức Mỹ', sortOrder: 2 },
-      { dayOfWeek: 1, startTime: '05:00', massType: 'Thánh lễ ngày thường', location: 'Nhà thờ Đức Mỹ', sortOrder: 1 },
-      { dayOfWeek: 2, startTime: '17:30', massType: 'Thánh lễ ngày thường', location: 'Nhà thờ Đức Mỹ', sortOrder: 1 },
-      { dayOfWeek: 3, startTime: '05:00', massType: 'Thánh lễ ngày thường', location: 'Nhà thờ Đức Mỹ', sortOrder: 1 },
-      { dayOfWeek: 4, startTime: '17:30', massType: 'Thánh lễ ngày thường', location: 'Nhà thờ Đức Mỹ', sortOrder: 1 },
-      { dayOfWeek: 5, startTime: '05:00', massType: 'Thánh lễ ngày thường', location: 'Nhà thờ Đức Mỹ', sortOrder: 1 },
-      { dayOfWeek: 6, startTime: '17:30', massType: 'Thánh lễ chiều thứ Bảy', location: 'Nhà thờ Đức Mỹ', sortOrder: 1 },
-    ],
+    data: Array.from({ length: 7 }, (_, dayOfWeek) =>
+      ['05:00', '17:30'].map((startTime, index) => ({
+        dayOfWeek,
+        startTime,
+        massType: dayOfWeek === 0 ? 'Thánh lễ Chúa nhật' : 'Thánh lễ ngày thường',
+        location: 'Nhà thờ Đức Mỹ',
+        sortOrder: index + 1,
+      })),
+    ).flat(),
   });
   await prisma.event.deleteMany();
   await prisma.event.createMany({
@@ -171,7 +169,7 @@ async function main() {
       diocese: 'Giáo phận Bà Rịa',
       patronSaint: 'Đức Maria',
       description: 'Giáo xứ Đức Mỹ là cộng đoàn hiệp nhất trong đức tin, cùng nhau sống Tin Mừng và lan tỏa yêu thương. Nội dung hiện tại là dữ liệu minh họa.',
-      address: 'Địa chỉ Giáo xứ Đức Mỹ — vui lòng cập nhật',
+      address: 'Ấp Mỹ Lộc, Xã Long Mỹ, Huyện Đất Đỏ, Tỉnh Bà Rịa - Vũng Tàu',
       phone: '0000 000 000',
       email: 'giaoxuducmy@example.com',
       heroUrl: hero,
