@@ -25,6 +25,7 @@ enum LinkType {
 model Admin {
   id           Int            @id @default(autoincrement())
   fullName     String
+  username     String?        @unique
   email        String         @unique
   passwordHash String
   avatarId     Int?

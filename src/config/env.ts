@@ -5,7 +5,10 @@ const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().default(5000),
   DATABASE_URL: z.string().min(1),
-  CLIENT_URL: z.string().url(),
+  CLIENT_URL: z.string().default('').refine(
+    (value) => !value || value.split(',').every((url) => z.url().safeParse(url.trim()).success),
+    'CLIENT_URL phải là một hoặc nhiều URL hợp lệ, phân cách bằng dấu phẩy',
+  ),
   JWT_ACCESS_SECRET: z.string().min(24),
   JWT_REFRESH_SECRET: z.string().min(24),
   JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),

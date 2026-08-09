@@ -9,9 +9,9 @@ export const authenticate: RequestHandler = (req, _res, next) => {
   try {
     const payload = jwt.verify(header.slice(7), env.JWT_ACCESS_SECRET) as {
       sub: string;
-      email: string;
+      username?: string;
     };
-    req.admin = { id: Number(payload.sub), email: payload.email };
+    req.admin = { id: Number(payload.sub), username: payload.username };
     next();
   } catch {
     next(new ApiError(401, 'Phiên đăng nhập không hợp lệ'));

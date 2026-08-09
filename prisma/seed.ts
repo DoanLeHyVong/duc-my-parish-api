@@ -3,9 +3,11 @@ import bcrypt from 'bcryptjs';
 import { PrismaClient, PostStatus } from '@prisma/client';
 
 const prisma = new PrismaClient();
-const email = process.env.SEED_ADMIN_EMAIL;
+const username = process.env.SEED_ADMIN_USERNAME?.trim().toLowerCase();
 const password = process.env.SEED_ADMIN_PASSWORD;
-if (!email || !password) throw new Error('Cần SEED_ADMIN_EMAIL và SEED_ADMIN_PASSWORD trong .env');
+const email = process.env.SEED_ADMIN_EMAIL?.trim().toLowerCase() || `${username}@local.invalid`;
+const fullName = process.env.SEED_ADMIN_FULL_NAME?.trim() || 'NGUYỄN HOÀNG BỬU KIM';
+if (!username || !password) throw new Error('Cần SEED_ADMIN_USERNAME và SEED_ADMIN_PASSWORD trong .env');
 
 const categoryNames = [
   'Tin giáo xứ',
@@ -23,15 +25,18 @@ const slugify = (value: string) =>
 const hero = '/hero-duc-my-v2.png';
 
 async function main() {
-  const admin = await prisma.admin.upsert({
-    where: { email: email!.toLowerCase() },
-    update: { passwordHash: await bcrypt.hash(password!, 12), isActive: true },
-    create: {
-      fullName: 'Quản trị Giáo xứ Đức Mỹ',
-      email: email!.toLowerCase(),
-      passwordHash: await bcrypt.hash(password!, 12),
-    },
+  const passwordHash = await bcrypt.hash(password!, 12);
+  const existingAdmin = await prisma.admin.findFirst({
+    where: { OR: [{ username }, { email }] },
   });
+  const admin = existingAdmin
+    ? await prisma.admin.update({
+        where: { id: existingAdmin.id },
+        data: { username, fullName, passwordHash, isActive: true },
+      })
+    : await prisma.admin.create({
+        data: { username, fullName, email, passwordHash },
+      });
 
   const categories = [];
   for (const [sortOrder, name] of categoryNames.entries()) {
@@ -198,7 +203,7 @@ async function main() {
     update: {},
     create: { key: 'site.seo', group: 'seo', value: { title: 'Giáo xứ Đức Mỹ', description: 'Cổng thông tin Giáo xứ Đức Mỹ' } },
   });
-  console.log(`Seed hoàn tất. Admin: ${email} (mật khẩu lấy từ SEED_ADMIN_PASSWORD)`);
+  console.log(`Seed hoàn tất. Admin: ${username} (mật khẩu lấy từ SEED_ADMIN_PASSWORD)`);
 }
 
 main().finally(() => prisma.$disconnect());

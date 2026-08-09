@@ -7,15 +7,16 @@ import { ApiError } from '../../utils/api-error.js';
 import type { LoginInput } from './auth.type.js';
 
 const hashToken = (token: string) => createHash('sha256').update(token).digest('hex');
-const safeAdmin = (admin: { id: number; fullName: string; email: string; isActive: boolean }) => ({
+const safeAdmin = (admin: { id: number; fullName: string; username: string | null; email: string; isActive: boolean }) => ({
   id: admin.id,
   fullName: admin.fullName,
+  username: admin.username,
   email: admin.email,
   isActive: admin.isActive,
 });
 
-const tokensFor = (admin: { id: number; email: string }) => ({
-  accessToken: jwt.sign({ email: admin.email }, env.JWT_ACCESS_SECRET, {
+const tokensFor = (admin: { id: number; username: string | null }) => ({
+  accessToken: jwt.sign({ username: admin.username }, env.JWT_ACCESS_SECRET, {
     subject: String(admin.id),
     expiresIn: env.JWT_ACCESS_EXPIRES_IN as any,
   }),
@@ -27,10 +28,11 @@ const tokensFor = (admin: { id: number; email: string }) => ({
 
 export const authService = {
   async login(input: LoginInput, ipAddress?: string) {
-    const admin = await prisma.admin.findUnique({ where: { email: input.email.toLowerCase() } });
-    if (!admin || !admin.isActive || admin.deletedAt) throw new ApiError(401, 'Email hoặc mật khẩu sai');
+    const username = input.username.trim().toLowerCase();
+    const admin = await prisma.admin.findUnique({ where: { username } });
+    if (!admin || !admin.isActive || admin.deletedAt) throw new ApiError(401, 'Tên đăng nhập hoặc mật khẩu sai');
     if (!(await bcrypt.compare(input.password, admin.passwordHash)))
-      throw new ApiError(401, 'Email hoặc mật khẩu sai');
+      throw new ApiError(401, 'Tên đăng nhập hoặc mật khẩu sai');
     const tokens = tokensFor(admin);
     await prisma.$transaction([
       prisma.admin.update({ where: { id: admin.id }, data: { lastLoginAt: new Date() } }),
@@ -96,7 +98,7 @@ export const authService = {
   async me(adminId: number) {
     const admin = await prisma.admin.findUnique({
       where: { id: adminId },
-      select: { id: true, fullName: true, email: true, isActive: true, lastLoginAt: true },
+      select: { id: true, fullName: true, username: true, email: true, isActive: true, lastLoginAt: true },
     });
     if (!admin) throw new ApiError(404, 'Không tìm thấy quản trị viên');
     return admin;

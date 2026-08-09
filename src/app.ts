@@ -12,9 +12,16 @@ import { apiLimiter } from './middlewares/rate-limit.middleware.js';
 import { apiRouter } from './routes/index.js';
 
 export const app = express();
+const allowedOrigins = env.CLIENT_URL.split(',').map((url) => url.trim()).filter(Boolean);
 app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(null, false);
+  },
+  credentials: true,
+}));
 app.use(pinoHttp({ logger }));
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -24,7 +31,7 @@ app.use('/api/v1', apiLimiter, apiRouter);
 const openapi = {
   openapi: '3.0.3',
   info: { title: 'Giáo xứ Đức Mỹ API', version: '1.0.0' },
-  servers: [{ url: `http://localhost:${env.PORT}/api/v1` }],
+  servers: [{ url: '/api/v1' }],
   paths: {
     '/health': { get: { summary: 'Health check', responses: { '200': { description: 'OK' } } } },
     '/public/home': { get: { summary: 'Dữ liệu trang chủ', responses: { '200': { description: 'OK' } } } },

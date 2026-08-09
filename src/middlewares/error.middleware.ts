@@ -18,9 +18,12 @@ export const errorMiddleware: ErrorRequestHandler = (error, _req, res, _next) =>
   }
   const status = error instanceof ApiError ? error.statusCode : 500;
   if (status === 500) logger.error({ err: error }, 'Unhandled request error');
+  const message = status === 500 && env.NODE_ENV === 'production'
+    ? 'Lỗi máy chủ, vui lòng thử lại sau'
+    : error instanceof Error ? error.message : 'Lỗi máy chủ';
   res.status(status).json({
     success: false,
-    message: error instanceof Error ? error.message : 'Lỗi máy chủ',
+    message,
     ...(error instanceof ApiError && error.errors ? { errors: error.errors } : {}),
     ...(env.NODE_ENV !== 'production' && status === 500
       ? { debug: error instanceof Error ? error.stack : undefined }
