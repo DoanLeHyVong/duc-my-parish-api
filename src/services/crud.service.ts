@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import sanitizeHtml from 'sanitize-html';
 import { prisma } from '../config/prisma.js';
 import { ApiError } from '../utils/api-error.js';
+import { normalizeDateTimeFields } from '../utils/normalize-datetime.js';
 
 const resourceModels: Record<string, string> = {
   posts: 'post',
@@ -64,7 +65,7 @@ const prepareData = async (resource: string, raw: Record<string, any>, adminId: 
     }
     data.email = data.email?.toLowerCase();
   }
-  return data;
+  return normalizeDateTimeFields(resource, data);
 };
 
 export const crudService = {
