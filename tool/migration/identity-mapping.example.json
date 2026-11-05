@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "parishAdminMappings": [
+    {
+      "parishAdminId": 0,
+      "targetUserId": "replace-with-reviewed-appglv-user-id",
+      "approvedBy": "replace-with-reviewer",
+      "reason": "replace-with-explicit-reviewed-reason"
+    }
+  ]
+}

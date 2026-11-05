@@ -3,16 +3,26 @@ import { ZodError } from 'zod';
 import { env } from '../config/env.js';
 import { logger } from '../config/logger.js';
 import { ApiError } from '../utils/api-error.js';
+import { ApiError as ContractApiError } from '../lib/api-error.js';
 
 export const errorMiddleware: ErrorRequestHandler = (error, _req, res, _next) => {
+  if (error instanceof ContractApiError) {
+    res.status(error.status).json({
+      error: { code: error.code, message: error.message, ...(error.details ? { details: error.details } : {}) },
+    });
+    return;
+  }
   if (error instanceof ZodError) {
+    const details = error.issues.map((issue) => ({
+      field: issue.path.join('.'),
+      message: issue.message,
+    }));
+    const message = 'Dữ liệu không hợp lệ';
     res.status(422).json({
       success: false,
-      message: 'Dữ liệu không hợp lệ',
-      errors: error.issues.map((issue) => ({
-        field: issue.path.join('.'),
-        message: issue.message,
-      })),
+      message,
+      errors: details,
+      error: { code: 'VALIDATION_ERROR', message, details },
     });
     return;
   }

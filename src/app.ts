@@ -12,6 +12,7 @@ import { apiLimiter } from './middlewares/rate-limit.middleware.js';
 import { apiRouter } from './routes/index.js';
 
 export const app = express();
+export const createApp = () => app;
 const allowedOrigins = env.CLIENT_URL.split(',').map((url) => url.trim()).filter(Boolean);
 app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false }));

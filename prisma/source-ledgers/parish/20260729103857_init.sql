@@ -426,3 +426,4 @@ ALTER TABLE `AlbumMedia` ADD CONSTRAINT `AlbumMedia_mediaId_fkey` FOREIGN KEY (`
 
 -- AddForeignKey
 ALTER TABLE `AuditLog` ADD CONSTRAINT `AuditLog_adminId_fkey` FOREIGN KEY (`adminId`) REFERENCES `Admin`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+

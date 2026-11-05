@@ -9,3 +9,5 @@ authRouter.post('/login', loginLimiter, asyncHandler(authController.login));
 authRouter.post('/refresh', refreshLimiter, asyncHandler(authController.refresh));
 authRouter.post('/logout', authenticate, asyncHandler(authController.logout));
 authRouter.get('/me', authenticate, asyncHandler(authController.me));
+authRouter.patch('/me', authenticate, asyncHandler(authController.updateProfile));
+authRouter.post('/change-password', authenticate, asyncHandler(authController.changePassword));

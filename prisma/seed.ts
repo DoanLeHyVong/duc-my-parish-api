@@ -1,8 +1,7 @@
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
-import { PrismaClient, PostStatus } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { PostStatus, RoleCode } from '../src/generated/prisma/client.js';
+import { prisma } from '../src/lib/prisma.js';
 const username = process.env.SEED_ADMIN_USERNAME?.trim().toLowerCase();
 const password = process.env.SEED_ADMIN_PASSWORD;
 const email = process.env.SEED_ADMIN_EMAIL?.trim().toLowerCase() || `${username}@local.invalid`;
@@ -17,7 +16,7 @@ const categoryNames = [
   'Tin Giáo phận',
   'Học hỏi Kinh Thánh',
   'Giáo lý',
-  'Phụng vụ',
+  'Phá»¥ng vá»¥',
 ];
 const slugify = (value: string) =>
   value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D')
@@ -25,18 +24,43 @@ const slugify = (value: string) =>
 const hero = '/hero-duc-my-v2.png';
 
 async function main() {
+  const permissionDefinitions = [
+    ['parish.manage', 'Quản trị nội dung Giáo xứ'],
+    ['appglv.manage', 'Quản trị nghiệp vụ AppGLV'],
+    ['appglv.teach', 'Thao tác Giáo lý viên theo phạm vi lớp'],
+    ['policies.manage', 'Soạn và công bố chính sách'],
+    ['security.manage', 'Quản trị tài khoản, vai trò và quyền'],
+  ] as const;
+  for (const [code, description] of permissionDefinitions) {
+    await prisma.permission.upsert({ where: { code }, update: { description }, create: { code, description } });
+  }
+  const rolePermissions: Record<RoleCode, string[]> = {
+    SUPER_ADMIN: permissionDefinitions.map(([code]) => code),
+    PARISH_ADMIN: ['parish.manage', 'policies.manage'],
+    APPGLV_ADMIN: ['appglv.manage'],
+    TEACHER: ['appglv.teach'],
+  };
+  for (const code of Object.values(RoleCode)) {
+    const role = await prisma.accessRole.upsert({ where: { code }, update: { name: code }, create: { code, name: code } });
+    await prisma.rolePermission.deleteMany({ where: { roleId: role.id } });
+    for (const permissionCode of rolePermissions[code]) {
+      const permission = await prisma.permission.findUniqueOrThrow({ where: { code: permissionCode } });
+      await prisma.rolePermission.create({ data: { roleId: role.id, permissionId: permission.id } });
+    }
+  }
+
   const passwordHash = await bcrypt.hash(password!, 12);
-  const existingAdmin = await prisma.admin.findFirst({
-    where: { OR: [{ username }, { email }] },
+  const admin = await prisma.user.upsert({
+    where: { username: username! },
+    update: { displayName: fullName, email, passwordHash, isActive: true, deletedAt: null },
+    create: { username: username!, displayName: fullName, email, passwordHash },
   });
-  const admin = existingAdmin
-    ? await prisma.admin.update({
-        where: { id: existingAdmin.id },
-        data: { username, fullName, passwordHash, isActive: true },
-      })
-    : await prisma.admin.create({
-        data: { username, fullName, email, passwordHash },
-      });
+  const superAdminRole = await prisma.accessRole.findUniqueOrThrow({ where: { code: RoleCode.SUPER_ADMIN } });
+  await prisma.userRoleAssignment.upsert({
+    where: { userId_roleId: { userId: admin.id, roleId: superAdminRole.id } },
+    update: {},
+    create: { userId: admin.id, roleId: superAdminRole.id, assignedBy: admin.id },
+  });
 
   const categories = [];
   for (const [sortOrder, name] of categoryNames.entries()) {
@@ -56,12 +80,12 @@ async function main() {
   });
   await prisma.menuItem.deleteMany({ where: { menuId: menu.id } });
   const nav = [
-    ['Trang chủ', '/'],
-    ['Giới thiệu', '/gioi-thieu'],
+    ['Trang chá»§', '/'],
+    ['Giá»›i thiá»‡u', '/gioi-thieu'],
     ['Thông báo', '/chuyen-muc/thong-bao'],
-    ['Giờ lễ', '/gio-le'],
+    ['Giá» lá»…', '/gio-le'],
     ['Lời Chúa', '/chuyen-muc/loi-chua-hang-ngay'],
-    ['Tin tức', '/chuyen-muc/tin-giao-xu'],
+    ['Tin tá»©c', '/chuyen-muc/tin-giao-xu'],
     ['Thư viện', '/thu-vien'],
     ['Liên hệ', '/lien-he'],
   ];
@@ -101,7 +125,7 @@ async function main() {
         title,
         slug,
         excerpt: 'Nội dung minh họa dành cho website Giáo xứ Đức Mỹ. Quản trị viên có thể cập nhật nội dung này.',
-        content: `<p>Đây là nội dung minh họa cho <strong>${title}</strong>.</p><p>Xin cộng đoàn hiệp thông cầu nguyện và cùng lan tỏa tinh thần yêu thương, phục vụ.</p>`,
+        content: `<p>Sample content for <strong>${title}</strong>.</p><p>Administrators may replace this development-only content.</p>`,
         authorId: admin.id,
         status: PostStatus.PUBLISHED,
         isFeatured: index < 3,
@@ -123,7 +147,7 @@ async function main() {
       title: sortOrder === 0 ? 'Giáo xứ Đức Mỹ' : `Đời sống đức tin ${sortOrder + 1}`,
       subtitle: 'Hiệp nhất trong đức tin — Lan tỏa yêu thương',
       imageUrl: hero,
-      primaryText: 'Xem giờ lễ',
+      primaryText: 'Xem giá» lá»…',
       primaryUrl: '/gio-le',
       sortOrder,
     })),
@@ -183,7 +207,7 @@ async function main() {
   await prisma.homeSection.deleteMany();
   const sections = [
     ['about', 'Giới thiệu Giáo xứ Đức Mỹ', 'FEATURED'],
-    ['latest-news', 'Tin tức mới nhất', 'GRID'],
+    ['latest-news', 'Tin tá»©c má»›i nháº¥t', 'GRID'],
     ['announcements', 'Thông báo giáo xứ', 'LIST'],
     ['daily-word', 'Chia sẻ Lời Chúa hằng ngày', 'FEATURED'],
     ['diocese-news', 'Tin Giáo phận', 'GRID'],
@@ -203,7 +227,7 @@ async function main() {
     update: {},
     create: { key: 'site.seo', group: 'seo', value: { title: 'Giáo xứ Đức Mỹ', description: 'Cổng thông tin Giáo xứ Đức Mỹ' } },
   });
-  console.log(`Seed hoàn tất. Admin: ${username} (mật khẩu lấy từ SEED_ADMIN_PASSWORD)`);
+  console.log(`Seed completed for administrator ${username}; password was read from SEED_ADMIN_PASSWORD.`);
 }
 
 main().finally(() => prisma.$disconnect());

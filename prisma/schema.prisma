@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
 
 enum PostStatus {
@@ -22,35 +22,6 @@ enum LinkType {
   POST
 }
 
-model Admin {
-  id           Int            @id @default(autoincrement())
-  fullName     String
-  username     String?        @unique
-  email        String         @unique
-  passwordHash String
-  avatarId     Int?
-  isActive     Boolean        @default(true)
-  lastLoginAt  DateTime?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  deletedAt    DateTime?
-  sessions     AdminSession[]
-  posts        Post[]
-  media        Media[]
-  auditLogs    AuditLog[]
-}
-
-model AdminSession {
-  id        Int       @id @default(autoincrement())
-  adminId   Int
-  tokenHash String    @db.VarChar(255)
-  expiresAt DateTime
-  revokedAt DateTime?
-  createdAt DateTime  @default(now())
-  admin     Admin     @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  @@index([adminId, expiresAt])
-}
-
 model Post {
   id              Int            @id @default(autoincrement())
   title           String
@@ -58,7 +29,7 @@ model Post {
   excerpt         String         @db.Text
   content         String         @db.LongText
   featuredImageId Int?
-  authorId        Int
+  authorId        String         @db.VarChar(30)
   status          PostStatus     @default(DRAFT)
   isFeatured      Boolean        @default(false)
   sourceName      String?
@@ -71,7 +42,7 @@ model Post {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   deletedAt       DateTime?
-  author          Admin          @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  author          User           @relation("ParishPostAuthor", fields: [authorId], references: [id], onDelete: Restrict)
   featuredImage   Media?         @relation("FeaturedImage", fields: [featuredImageId], references: [id], onDelete: SetNull)
   categories      PostCategory[]
   tags            PostTag[]
@@ -138,11 +109,11 @@ model Media {
   altText            String?
   caption            String?
   folder             String
-  uploadedById       Int
+  uploadedById       String        @db.VarChar(30)
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   deletedAt          DateTime?
-  uploadedBy         Admin         @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  uploadedBy         User          @relation("ParishMediaUploader", fields: [uploadedById], references: [id], onDelete: Restrict)
   featuredPosts      Post[]        @relation("FeaturedImage")
   categoryImages     Category[]    @relation("CategoryImage")
   postMedia          PostMedia[]
@@ -345,13 +316,756 @@ model Setting {
 
 model AuditLog {
   id         Int      @id @default(autoincrement())
-  adminId    Int?
+  actorId    String?  @db.VarChar(30)
   action     String
   entityType String?
   entityId   String?
   metadata   Json?
   ipAddress  String?
   createdAt  DateTime @default(now())
-  admin      Admin?   @relation(fields: [adminId], references: [id], onDelete: SetNull)
-  @@index([adminId, createdAt])
+  actor      User?    @relation("SecurityAuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+}
+
+enum RoleCode {
+  SUPER_ADMIN
+  PARISH_ADMIN
+  APPGLV_ADMIN
+  TEACHER
+}
+
+enum PolicyKind {
+  PRIVACY
+  TERMS
+  SUPPORT
+  DATA_REQUEST
+}
+
+enum PolicyRevisionStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model AccessRole {
+  id          String                   @id @default(cuid()) @db.VarChar(30)
+  code        RoleCode                 @unique
+  name        String                   @db.VarChar(120)
+  assignments UserRoleAssignment[]
+  permissions RolePermission[]
+  createdAt   DateTime                 @default(now()) @db.DateTime(3)
+  updatedAt   DateTime                 @updatedAt @db.DateTime(3)
+
+  @@map("access_roles")
+}
+
+model Permission {
+  id          String           @id @default(cuid()) @db.VarChar(30)
+  code        String           @unique @db.VarChar(100)
+  description String           @db.VarChar(255)
+  roles       RolePermission[]
+  createdAt   DateTime         @default(now()) @db.DateTime(3)
+
+  @@map("permissions")
+}
+
+model UserRoleAssignment {
+  userId     String     @db.VarChar(30)
+  roleId     String     @db.VarChar(30)
+  assignedBy String?    @db.VarChar(30)
+  assignedAt DateTime   @default(now()) @db.DateTime(3)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  role       AccessRole @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@id([userId, roleId])
+  @@index([roleId, userId])
+  @@map("user_role_assignments")
+}
+
+model RolePermission {
+  roleId       String     @db.VarChar(30)
+  permissionId String     @db.VarChar(30)
+  role         AccessRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId, roleId])
+  @@map("role_permissions")
+}
+
+model AuthSession {
+  id        String    @id @default(cuid()) @db.VarChar(30)
+  userId    String    @db.VarChar(30)
+  tokenHash String    @unique @db.VarChar(64)
+  expiresAt DateTime  @db.DateTime(3)
+  revokedAt DateTime? @db.DateTime(3)
+  createdAt DateTime  @default(now()) @db.DateTime(3)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@map("auth_sessions")
+}
+
+model Policy {
+  id          String           @id @default(cuid()) @db.VarChar(30)
+  kind        PolicyKind       @unique
+  slug        String           @unique @db.VarChar(100)
+  title       String           @db.VarChar(180)
+  createdAt   DateTime         @default(now()) @db.DateTime(3)
+  updatedAt   DateTime         @updatedAt @db.DateTime(3)
+  revisions   PolicyRevision[]
+
+  @@map("policies")
+}
+
+model PolicyRevision {
+  id            String               @id @default(cuid()) @db.VarChar(30)
+  policyId      String               @db.VarChar(30)
+  revision      Int
+  status        PolicyRevisionStatus @default(DRAFT)
+  title         String               @db.VarChar(180)
+  contentHtml   String               @db.LongText
+  contentHash   String               @db.VarChar(64)
+  createdById   String               @db.VarChar(30)
+  publishedById String?              @db.VarChar(30)
+  createdAt     DateTime             @default(now()) @db.DateTime(3)
+  publishedAt   DateTime?            @db.DateTime(3)
+  policy        Policy               @relation(fields: [policyId], references: [id], onDelete: Restrict)
+  createdBy     User                 @relation("PolicyRevisionCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  publishedBy   User?                @relation("PolicyRevisionPublisher", fields: [publishedById], references: [id], onDelete: Restrict)
+
+  @@unique([policyId, revision])
+  @@index([policyId, status, publishedAt])
+  @@map("policy_revisions")
+}
+
+model User {
+  id                        String                 @id @default(cuid()) @db.VarChar(30)
+  username                  String                 @unique @db.VarChar(64)
+  legacyParishAdminId       Int?                   @unique
+  email                     String?                @unique @db.VarChar(191)
+  lastLoginAt               DateTime?              @db.DateTime(3)
+  displayName               String                 @db.VarChar(120)
+  passwordHash              String                 @db.VarChar(255)
+  isActive                  Boolean                @default(true)
+  authVersion               Int                    @default(1)
+  deletedAt                 DateTime?              @db.DateTime(3)
+  createdAt                 DateTime               @default(now()) @db.DateTime(3)
+  updatedAt                 DateTime               @updatedAt @db.DateTime(3)
+  roleAssignments           UserRoleAssignment[]
+  sessions                  AuthSession[]
+  parishPosts               Post[]                 @relation("ParishPostAuthor")
+  parishMedia               Media[]                @relation("ParishMediaUploader")
+  securityAuditLogs         AuditLog[]             @relation("SecurityAuditActor")
+  createdPolicyRevisions    PolicyRevision[]       @relation("PolicyRevisionCreator")
+  publishedPolicyRevisions  PolicyRevision[]       @relation("PolicyRevisionPublisher")
+  assignments               TeacherAssignment[]
+  createdScheduleTemplates  ScheduleTemplate[]     @relation("ScheduleTemplateCreator")
+  createdScheduleExceptions ScheduleException[]    @relation("ScheduleExceptionCreator")
+  updatedAttendanceRecords  AttendanceRecord[]     @relation("AttendanceRecordUpdater")
+  attendanceEvents          AttendanceEvent[]      @relation("AttendanceEventActor")
+  attendanceAudits          AttendanceAuditEntry[] @relation("AttendanceAuditActor")
+  submittedSessions         AttendanceSession[]    @relation("AttendanceSubmittedBy")
+  finalizedSessions         AttendanceSession[]    @relation("AttendanceFinalizedBy")
+  studentImportBatches      StudentImportBatch[]   @relation("StudentImportActor")
+  studentImportEvents       StudentImportEvent[]   @relation("StudentImportEventActor")
+  gradeAudits               GradeAuditEntry[]      @relation("GradeAuditActor")
+  publishedRules            ClassificationRuleVersion[] @relation("ClassificationRulePublisher")
+  classificationResults     ClassificationResult[] @relation("ClassificationResultActor")
+  accountDeletionRequests   AccountDeletionRequest[] @relation("AccountDeletionRequester")
+  accountDeletionEvents     AccountDeletionEvent[] @relation("AccountDeletionEventActor")
+
+  @@index([displayName])
+  @@map("users")
+}
+
+enum AcademicStatus {
+  OPEN
+  CLOSED
+}
+
+enum ActivityType {
+  TUESDAY_MASS
+  THURSDAY_MASS
+  SUNDAY_MASS
+  CATECHISM_LESSON
+}
+
+enum AttendanceSessionStatus {
+  OPEN
+  SUBMITTED
+  FINALIZED
+}
+
+enum AttendanceState {
+  NOT_MARKED
+  PRESENT
+  ABSENT
+}
+
+enum ScheduleExceptionType {
+  CANCEL
+  MOVE
+  ADD
+}
+
+enum AttendanceEventType {
+  GENERATED
+  SCHEDULE_CHANGED
+  SAVED
+  SUBMITTED
+  FINALIZED
+  CORRECTED
+}
+
+enum StudentImportStatus {
+  PREVIEW_READY
+  COMPLETED
+  FAILED
+}
+
+enum StudentImportRowStatus {
+  VALID
+  INVALID
+  POSSIBLE_DUPLICATE
+}
+
+enum StudentImportResolution {
+  CREATE_SEPARATE
+  EXCLUDE
+}
+
+enum StudentImportEventType {
+  PREVIEW_CREATED
+  CONFIRMED
+  FAILED
+}
+
+enum ClassificationRuleStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum GradeRoundingMethod {
+  HALF_UP
+  HALF_EVEN
+  DOWN
+  UP
+}
+
+enum AccountDeletionStatus {
+  SUBMITTED
+  IN_REVIEW
+  VERIFIED
+  APPROVED
+  REJECTED
+  EXECUTED
+}
+
+enum AccountDeletionEventType {
+  SUBMITTED
+  REVIEW_STARTED
+  VERIFIED
+  APPROVED
+  REJECTED
+  EXECUTED
+}
+
+model AccountDeletionRequest {
+  id                 String                  @id @default(cuid()) @db.VarChar(30)
+  requestKey         String                  @unique @db.VarChar(64)
+  requesterId        String                  @db.VarChar(30)
+  activeRequesterId  String?                 @unique @db.VarChar(30)
+  status             AccountDeletionStatus   @default(SUBMITTED)
+  revision           Int                     @default(1)
+  decisionReason     String?                 @db.Text
+  retentionDecisions Json?
+  removedData        Json?
+  submittedAt        DateTime                @default(now()) @db.DateTime(3)
+  inReviewAt         DateTime?               @db.DateTime(3)
+  verifiedAt         DateTime?               @db.DateTime(3)
+  approvedAt         DateTime?               @db.DateTime(3)
+  rejectedAt         DateTime?               @db.DateTime(3)
+  executedAt         DateTime?               @db.DateTime(3)
+  updatedAt          DateTime                @updatedAt @db.DateTime(3)
+  requester          User                    @relation("AccountDeletionRequester", fields: [requesterId], references: [id], onDelete: Restrict)
+  events             AccountDeletionEvent[]
+
+  @@index([status, submittedAt])
+  @@index([requesterId, submittedAt])
+  @@map("account_deletion_requests")
+}
+
+model AccountDeletionEvent {
+  id        String                   @id @default(cuid()) @db.VarChar(30)
+  requestId String                   @db.VarChar(30)
+  actorId   String                   @db.VarChar(30)
+  type      AccountDeletionEventType
+  fromStatus AccountDeletionStatus?
+  toStatus  AccountDeletionStatus
+  reason    String?                  @db.Text
+  metadata  Json?
+  createdAt DateTime                 @default(now()) @db.DateTime(3)
+  request   AccountDeletionRequest   @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  actor     User                     @relation("AccountDeletionEventActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([requestId, createdAt])
+  @@index([actorId, createdAt])
+  @@map("account_deletion_events")
+}
+
+model AcademicYear {
+  id          String           @id @default(cuid()) @db.VarChar(30)
+  name        String           @unique @db.VarChar(120)
+  status      AcademicStatus   @default(OPEN)
+  closedAt    DateTime?        @db.DateTime(3)
+  createdAt   DateTime         @default(now()) @db.DateTime(3)
+  updatedAt   DateTime         @updatedAt @db.DateTime(3)
+  semesters   Semester[]
+  classes     CatechismClass[]
+  enrollments Enrollment[]
+
+  @@index([status, name])
+  @@map("academic_years")
+}
+
+model Semester {
+  id             String         @id @default(cuid()) @db.VarChar(30)
+  academicYearId String         @db.VarChar(30)
+  name           String         @db.VarChar(120)
+  status         AcademicStatus @default(OPEN)
+  closedAt       DateTime?      @db.DateTime(3)
+  createdAt      DateTime       @default(now()) @db.DateTime(3)
+  updatedAt      DateTime       @updatedAt @db.DateTime(3)
+  academicYear   AcademicYear   @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+  gradeColumns   GradeColumn[]
+  grades         GradeRecord[]
+  ruleVersions   ClassificationRuleVersion[]
+  classificationResults ClassificationResult[]
+
+  @@unique([academicYearId, name])
+  @@index([academicYearId, status])
+  @@map("semesters")
+}
+
+model CatechismClass {
+  id                 String              @id @default(cuid()) @db.VarChar(30)
+  academicYearId     String              @db.VarChar(30)
+  name               String              @db.VarChar(120)
+  status             AcademicStatus      @default(OPEN)
+  closedAt           DateTime?           @db.DateTime(3)
+  createdAt          DateTime            @default(now()) @db.DateTime(3)
+  updatedAt          DateTime            @updatedAt @db.DateTime(3)
+  academicYear       AcademicYear        @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+  enrollments        Enrollment[]
+  assignments        TeacherAssignment[]
+  scheduleTemplates  ScheduleTemplate[]
+  scheduleExceptions ScheduleException[]
+  attendanceSessions AttendanceSession[]
+  studentImportBatches StudentImportBatch[]
+  gradeColumns       GradeColumn[]
+  grades             GradeRecord[]
+  ruleVersions       ClassificationRuleVersion[]
+  classificationResults ClassificationResult[]
+
+  @@unique([academicYearId, name])
+  @@index([academicYearId, status, name])
+  @@map("catechism_classes")
+}
+
+model Student {
+  id                String             @id @default(cuid()) @db.VarChar(30)
+  saintName         String             @db.VarChar(120)
+  fullName          String             @db.VarChar(180)
+  createdAt         DateTime           @default(now()) @db.DateTime(3)
+  updatedAt         DateTime           @updatedAt @db.DateTime(3)
+  enrollments       Enrollment[]
+  attendanceRecords AttendanceRecord[]
+  importedRows      StudentImportRow[]
+  grades            GradeRecord[]
+  classificationResults ClassificationResult[]
+
+  @@index([fullName])
+  @@index([saintName])
+  @@map("students")
+}
+
+model GradeColumn {
+  id          String         @id @default(cuid()) @db.VarChar(30)
+  classId     String         @db.VarChar(30)
+  semesterId  String         @db.VarChar(30)
+  name        String         @db.VarChar(120)
+  minimum     Decimal        @db.Decimal(18, 6)
+  maximum     Decimal        @db.Decimal(18, 6)
+  precision   Int
+  revision    Int            @default(0)
+  createdAt   DateTime       @default(now()) @db.DateTime(3)
+  updatedAt   DateTime       @updatedAt @db.DateTime(3)
+  catechismClass CatechismClass @relation(fields: [classId], references: [id], onDelete: Restrict)
+  semester    Semester       @relation(fields: [semesterId], references: [id], onDelete: Restrict)
+  grades      GradeRecord[]
+  ruleWeights ClassificationRuleWeight[]
+
+  @@unique([classId, semesterId, name])
+  @@unique([id, classId, semesterId])
+  @@index([classId, semesterId])
+  @@map("grade_columns")
+}
+
+model GradeRecord {
+  id            String       @id @default(cuid()) @db.VarChar(30)
+  studentId     String       @db.VarChar(30)
+  classId       String       @db.VarChar(30)
+  semesterId    String       @db.VarChar(30)
+  gradeColumnId String       @db.VarChar(30)
+  value         Decimal      @db.Decimal(18, 6)
+  revision      Int          @default(0)
+  createdAt     DateTime     @default(now()) @db.DateTime(3)
+  updatedAt     DateTime     @updatedAt @db.DateTime(3)
+  student       Student      @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  catechismClass CatechismClass @relation(fields: [classId], references: [id], onDelete: Restrict)
+  semester      Semester     @relation(fields: [semesterId], references: [id], onDelete: Restrict)
+  gradeColumn   GradeColumn  @relation(fields: [gradeColumnId, classId, semesterId], references: [id, classId, semesterId], onDelete: Restrict)
+  auditEntries  GradeAuditEntry[]
+
+  @@unique([studentId, classId, semesterId, gradeColumnId])
+  @@index([classId, semesterId, studentId])
+  @@map("grade_records")
+}
+
+model GradeAuditEntry {
+  id            String       @id @default(cuid()) @db.VarChar(30)
+  gradeRecordId String       @db.VarChar(30)
+  actorId       String       @db.VarChar(30)
+  requestId     String       @unique @db.VarChar(64)
+  fingerprint   String       @db.Char(64)
+  beforeValue   Decimal?     @db.Decimal(18, 6)
+  afterValue    Decimal      @db.Decimal(18, 6)
+  beforeRevision Int?
+  afterRevision Int
+  createdAt     DateTime     @default(now()) @db.DateTime(3)
+  gradeRecord   GradeRecord  @relation(fields: [gradeRecordId], references: [id], onDelete: Restrict)
+  actor         User         @relation("GradeAuditActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([gradeRecordId, createdAt])
+  @@index([actorId, createdAt])
+  @@map("grade_audit_entries")
+}
+
+model ClassificationRuleVersion {
+  id            String       @id @default(cuid()) @db.VarChar(30)
+  classId       String       @db.VarChar(30)
+  semesterId    String       @db.VarChar(30)
+  version       Int
+  status        ClassificationRuleStatus @default(DRAFT)
+  decimalPlaces Int
+  roundingMethod GradeRoundingMethod
+  revision      Int          @default(0)
+  publishedAt   DateTime?    @db.DateTime(3)
+  publishedById String?      @db.VarChar(30)
+  createdAt     DateTime     @default(now()) @db.DateTime(3)
+  catechismClass CatechismClass @relation(fields: [classId], references: [id], onDelete: Restrict, map: "rule_versions_class_fkey")
+  semester      Semester     @relation(fields: [semesterId], references: [id], onDelete: Restrict, map: "rule_versions_semester_fkey")
+  publishedBy   User?        @relation("ClassificationRulePublisher", fields: [publishedById], references: [id], onDelete: Restrict, map: "rule_versions_publisher_fkey")
+  weights       ClassificationRuleWeight[]
+  bands         ClassificationRuleBand[]
+  results       ClassificationResult[]
+
+  @@unique([classId, semesterId, version], map: "rule_versions_scope_version_key")
+  @@index([classId, semesterId, status, version], map: "rule_versions_scope_status_idx")
+  @@map("classification_rule_versions")
+}
+
+model ClassificationRuleWeight {
+  id            String       @id @default(cuid()) @db.VarChar(30)
+  ruleVersionId String       @db.VarChar(30)
+  gradeColumnId String       @db.VarChar(30)
+  weight        Decimal      @db.Decimal(18, 6)
+  ruleVersion   ClassificationRuleVersion @relation(fields: [ruleVersionId], references: [id], onDelete: Restrict, map: "rule_weights_version_fkey")
+  gradeColumn   GradeColumn  @relation(fields: [gradeColumnId], references: [id], onDelete: Restrict, map: "rule_weights_column_fkey")
+
+  @@unique([ruleVersionId, gradeColumnId], map: "rule_weights_version_column_key")
+  @@map("classification_rule_weights")
+}
+
+model ClassificationRuleBand {
+  id            String       @id @default(cuid()) @db.VarChar(30)
+  ruleVersionId String       @db.VarChar(30)
+  minimumInclusive Decimal   @db.Decimal(18, 6)
+  label         String       @db.VarChar(120)
+  ruleVersion   ClassificationRuleVersion @relation(fields: [ruleVersionId], references: [id], onDelete: Restrict, map: "rule_bands_version_fkey")
+
+  @@unique([ruleVersionId, minimumInclusive], map: "rule_bands_version_minimum_key")
+  @@index([ruleVersionId, minimumInclusive], map: "rule_bands_version_minimum_idx")
+  @@map("classification_rule_bands")
+}
+
+model ClassificationResult {
+  id              String       @id @default(cuid()) @db.VarChar(30)
+  studentId       String       @db.VarChar(30)
+  classId         String       @db.VarChar(30)
+  semesterId      String       @db.VarChar(30)
+  ruleVersionId   String       @db.VarChar(30)
+  resultRevision  Int
+  weightedAverage Decimal      @db.Decimal(18, 6)
+  roundedAverage  Decimal      @db.Decimal(18, 6)
+  classificationLabel String   @db.VarChar(120)
+  inputSnapshot   Json
+  inputFingerprint String      @db.Char(64)
+  requestId       String       @unique @db.VarChar(64)
+  actorId         String       @db.VarChar(30)
+  createdAt       DateTime     @default(now()) @db.DateTime(3)
+  student         Student      @relation(fields: [studentId], references: [id], onDelete: Restrict, map: "results_student_fkey")
+  catechismClass  CatechismClass @relation(fields: [classId], references: [id], onDelete: Restrict, map: "results_class_fkey")
+  semester        Semester     @relation(fields: [semesterId], references: [id], onDelete: Restrict, map: "results_semester_fkey")
+  ruleVersion     ClassificationRuleVersion @relation(fields: [ruleVersionId], references: [id], onDelete: Restrict, map: "results_rule_version_fkey")
+  actor           User         @relation("ClassificationResultActor", fields: [actorId], references: [id], onDelete: Restrict, map: "results_actor_fkey")
+
+  @@unique([studentId, classId, semesterId, resultRevision], map: "results_scope_revision_key")
+  @@index([classId, semesterId, createdAt], map: "results_class_semester_created_idx")
+  @@index([studentId, semesterId, createdAt], map: "results_student_semester_created_idx")
+  @@index([ruleVersionId], map: "results_rule_version_idx")
+  @@map("classification_results")
+}
+
+model StudentImportBatch {
+  id                      String              @id @default(cuid()) @db.VarChar(30)
+  actorId                 String              @db.VarChar(30)
+  classId                 String              @db.VarChar(30)
+  fileName                String              @db.VarChar(255)
+  fileSize                Int
+  fileSha256              String              @db.Char(64)
+  mappingKey              String              @db.Char(64)
+  mapping                 Json
+  status                  StudentImportStatus @default(PREVIEW_READY)
+  revision                Int                 @default(0)
+  totalRows               Int                 @default(0)
+  validRows               Int                 @default(0)
+  invalidRows             Int                 @default(0)
+  possibleDuplicateRows   Int                 @default(0)
+  createdStudents         Int                 @default(0)
+  excludedRows            Int                 @default(0)
+  confirmationRequestId   String?             @unique @db.VarChar(64)
+  confirmationFingerprint String?             @db.Char(64)
+  failureCode             String?             @db.VarChar(80)
+  failureMessage          String?             @db.VarChar(500)
+  completedAt             DateTime?           @db.DateTime(3)
+  createdAt               DateTime            @default(now()) @db.DateTime(3)
+  updatedAt               DateTime            @updatedAt @db.DateTime(3)
+  actor                   User                @relation("StudentImportActor", fields: [actorId], references: [id], onDelete: Restrict)
+  catechismClass          CatechismClass      @relation(fields: [classId], references: [id], onDelete: Restrict)
+  rows                    StudentImportRow[]
+  events                  StudentImportEvent[]
+
+  @@index([createdAt])
+  @@index([actorId, createdAt])
+  @@index([fileSha256, classId, mappingKey])
+  @@map("student_import_batches")
+}
+
+model StudentImportRow {
+  id                  String                  @id @default(cuid()) @db.VarChar(30)
+  batchId             String                  @db.VarChar(30)
+  rowNumber           Int
+  saintName           String?                 @db.VarChar(120)
+  fullName            String?                 @db.VarChar(180)
+  status              StudentImportRowStatus
+  validationErrors    Json?
+  candidateStudentIds Json?
+  candidateRowNumbers Json?
+  resolution          StudentImportResolution?
+  createdStudentId    String?                 @db.VarChar(30)
+  createdAt           DateTime                @default(now()) @db.DateTime(3)
+  updatedAt           DateTime                @updatedAt @db.DateTime(3)
+  batch               StudentImportBatch      @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  createdStudent      Student?                 @relation(fields: [createdStudentId], references: [id], onDelete: Restrict)
+
+  @@unique([batchId, rowNumber])
+  @@index([batchId, status])
+  @@map("student_import_rows")
+}
+
+model StudentImportEvent {
+  id        String                 @id @default(cuid()) @db.VarChar(30)
+  batchId   String                 @db.VarChar(30)
+  actorId   String                 @db.VarChar(30)
+  type      StudentImportEventType
+  details   Json?
+  createdAt DateTime               @default(now()) @db.DateTime(3)
+  batch     StudentImportBatch     @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  actor     User                   @relation("StudentImportEventActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([batchId, createdAt])
+  @@map("student_import_events")
+}
+
+model Enrollment {
+  id             String         @id @default(cuid()) @db.VarChar(30)
+  studentId      String         @db.VarChar(30)
+  classId        String         @db.VarChar(30)
+  academicYearId String         @db.VarChar(30)
+  currentKey     String?        @unique @db.VarChar(70)
+  startedAt      DateTime       @default(now()) @db.DateTime(3)
+  endedAt        DateTime?      @db.DateTime(3)
+  student        Student        @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  catechismClass CatechismClass @relation(fields: [classId], references: [id], onDelete: Restrict)
+  academicYear   AcademicYear   @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+
+  @@index([studentId, academicYearId, endedAt])
+  @@index([classId, endedAt])
+  @@map("enrollments")
+}
+
+model TeacherAssignment {
+  id             String         @id @default(cuid()) @db.VarChar(30)
+  teacherId      String         @db.VarChar(30)
+  classId        String         @db.VarChar(30)
+  currentKey     String?        @unique @db.VarChar(70)
+  startedAt      DateTime       @default(now()) @db.DateTime(3)
+  endedAt        DateTime?      @db.DateTime(3)
+  teacher        User           @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+  catechismClass CatechismClass @relation(fields: [classId], references: [id], onDelete: Restrict)
+
+  @@index([teacherId, endedAt])
+  @@index([classId, endedAt])
+  @@map("teacher_assignments")
+}
+
+model ScheduleTemplate {
+  id                       String              @id @default(cuid()) @db.VarChar(30)
+  classId                  String              @db.VarChar(30)
+  createdById              String              @db.VarChar(30)
+  activityType             ActivityType
+  weekday                  Int
+  occurrenceMinute         Int
+  utcOffsetMinutes         Int
+  windowOpenOffsetMinutes  Int
+  windowCloseOffsetMinutes Int
+  effectiveStart           DateTime            @db.Date
+  effectiveEnd             DateTime            @db.Date
+  isActive                 Boolean             @default(true)
+  revision                 Int                 @default(0)
+  createdAt                DateTime            @default(now()) @db.DateTime(3)
+  updatedAt                DateTime            @updatedAt @db.DateTime(3)
+  catechismClass           CatechismClass      @relation(fields: [classId], references: [id], onDelete: Restrict)
+  createdBy                User                @relation("ScheduleTemplateCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  sessions                 AttendanceSession[]
+  exceptions               ScheduleException[]
+
+  @@unique([classId, activityType, weekday, occurrenceMinute, effectiveStart, effectiveEnd])
+  @@index([classId, isActive])
+  @@map("schedule_templates")
+}
+
+model AttendanceSession {
+  id                 String                  @id @default(cuid()) @db.VarChar(30)
+  classId            String                  @db.VarChar(30)
+  scheduleTemplateId String?                 @db.VarChar(30)
+  activityType       ActivityType
+  occursAt           DateTime                @db.DateTime(3)
+  windowOpensAt      DateTime                @db.DateTime(3)
+  windowClosesAt     DateTime                @db.DateTime(3)
+  status             AttendanceSessionStatus @default(OPEN)
+  isCancelled        Boolean                 @default(false)
+  hasUserMutation    Boolean                 @default(false)
+  revision           Int                     @default(0)
+  submittedAt        DateTime?               @db.DateTime(3)
+  submittedById      String?                 @db.VarChar(30)
+  finalizedAt        DateTime?               @db.DateTime(3)
+  finalizedById      String?                 @db.VarChar(30)
+  createdAt          DateTime                @default(now()) @db.DateTime(3)
+  updatedAt          DateTime                @updatedAt @db.DateTime(3)
+  catechismClass     CatechismClass          @relation(fields: [classId], references: [id], onDelete: Restrict)
+  scheduleTemplate   ScheduleTemplate?       @relation(fields: [scheduleTemplateId], references: [id], onDelete: Restrict)
+  submittedBy        User?                   @relation("AttendanceSubmittedBy", fields: [submittedById], references: [id], onDelete: Restrict)
+  finalizedBy        User?                   @relation("AttendanceFinalizedBy", fields: [finalizedById], references: [id], onDelete: Restrict)
+  records            AttendanceRecord[]
+  events             AttendanceEvent[]
+  auditEntries       AttendanceAuditEntry[]
+  targetExceptions   ScheduleException[]     @relation("ScheduleExceptionTarget")
+  resultExceptions   ScheduleException[]     @relation("ScheduleExceptionResult")
+
+  @@unique([classId, activityType, occursAt])
+  @@index([classId, status, occursAt])
+  @@index([scheduleTemplateId, occursAt])
+  @@map("attendance_sessions")
+}
+
+model AttendanceRecord {
+  id                String                 @id @default(cuid()) @db.VarChar(30)
+  sessionId         String                 @db.VarChar(30)
+  studentId         String                 @db.VarChar(30)
+  saintNameSnapshot String                 @db.VarChar(120)
+  fullNameSnapshot  String                 @db.VarChar(180)
+  state             AttendanceState        @default(NOT_MARKED)
+  updatedById       String?                @db.VarChar(30)
+  markedAt          DateTime?              @db.DateTime(3)
+  createdAt         DateTime               @default(now()) @db.DateTime(3)
+  updatedAt         DateTime               @updatedAt @db.DateTime(3)
+  session           AttendanceSession      @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  student           Student                @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  updatedBy         User?                  @relation("AttendanceRecordUpdater", fields: [updatedById], references: [id], onDelete: Restrict)
+  auditEntries      AttendanceAuditEntry[]
+
+  @@unique([sessionId, studentId])
+  @@index([sessionId, state])
+  @@index([studentId, createdAt])
+  @@map("attendance_records")
+}
+
+model AttendanceEvent {
+  id        String              @id @default(cuid()) @db.VarChar(30)
+  sessionId String              @db.VarChar(30)
+  actorId   String?             @db.VarChar(30)
+  type      AttendanceEventType
+  requestId String?             @unique @db.VarChar(64)
+  details   Json?
+  createdAt DateTime            @default(now()) @db.DateTime(3)
+  session   AttendanceSession   @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  actor     User?               @relation("AttendanceEventActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([sessionId, createdAt])
+  @@map("attendance_events")
+}
+
+model AttendanceAuditEntry {
+  id          String            @id @default(cuid()) @db.VarChar(30)
+  sessionId   String            @db.VarChar(30)
+  recordId    String            @db.VarChar(30)
+  actorId     String            @db.VarChar(30)
+  requestId   String            @unique @db.VarChar(64)
+  beforeState AttendanceState
+  afterState  AttendanceState
+  reason      String            @db.VarChar(500)
+  createdAt   DateTime          @default(now()) @db.DateTime(3)
+  session     AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  record      AttendanceRecord  @relation(fields: [recordId], references: [id], onDelete: Restrict)
+  actor       User              @relation("AttendanceAuditActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([sessionId, createdAt])
+  @@index([recordId, createdAt])
+  @@map("attendance_audit_entries")
+}
+
+model ScheduleException {
+  id                 String                @id @default(cuid()) @db.VarChar(30)
+  classId            String                @db.VarChar(30)
+  scheduleTemplateId String?               @db.VarChar(30)
+  targetSessionId    String?               @db.VarChar(30)
+  resultSessionId    String?               @db.VarChar(30)
+  createdById        String                @db.VarChar(30)
+  type               ScheduleExceptionType
+  note               String?               @db.VarChar(500)
+  previousOccursAt   DateTime?             @db.DateTime(3)
+  newOccursAt        DateTime?             @db.DateTime(3)
+  createdAt          DateTime              @default(now()) @db.DateTime(3)
+  catechismClass     CatechismClass        @relation(fields: [classId], references: [id], onDelete: Restrict)
+  scheduleTemplate   ScheduleTemplate?     @relation(fields: [scheduleTemplateId], references: [id], onDelete: Restrict)
+  targetSession      AttendanceSession?    @relation("ScheduleExceptionTarget", fields: [targetSessionId], references: [id], onDelete: Restrict)
+  resultSession      AttendanceSession?    @relation("ScheduleExceptionResult", fields: [resultSessionId], references: [id], onDelete: Restrict)
+  createdBy          User                  @relation("ScheduleExceptionCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([classId, createdAt])
+  @@index([scheduleTemplateId, createdAt])
+  @@map("schedule_exceptions")
 }

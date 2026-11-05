@@ -1,8 +1,10 @@
 node_modules/
 dist/
 .env
+tool/migration/evidence/
 *.log
 coverage/
+tool/migration/evidence/
 prisma/*.db
 .idea/
 .vscode/

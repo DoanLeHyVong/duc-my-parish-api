@@ -20,6 +20,41 @@ const schema = z.object({
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
   LOG_LEVEL: z.string().default('info'),
+  AUTH_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60000),
+  AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(10),
 });
 
 export const env = schema.parse(process.env);
+export type AppEnv = typeof env;
+export type UnifiedEnv = AppEnv & {
+  CORS_ORIGINS: string;
+  JWT_SECRET: string;
+  JWT_EXPIRES_IN_SECONDS: number;
+  DATABASE_HOST: string;
+  DATABASE_PORT: number;
+  DATABASE_USER: string;
+  DATABASE_PASSWORD: string;
+  DATABASE_NAME: string;
+};
+
+export const getEnv = (): UnifiedEnv => {
+  const databaseUrl = new URL(env.DATABASE_URL);
+  return {
+    ...env,
+    CORS_ORIGINS: env.CLIENT_URL,
+    JWT_SECRET: env.JWT_ACCESS_SECRET,
+    JWT_EXPIRES_IN_SECONDS: parseDurationSeconds(env.JWT_ACCESS_EXPIRES_IN),
+    DATABASE_HOST: databaseUrl.hostname,
+    DATABASE_PORT: Number(databaseUrl.port || 3306),
+    DATABASE_USER: decodeURIComponent(databaseUrl.username),
+    DATABASE_PASSWORD: decodeURIComponent(databaseUrl.password),
+    DATABASE_NAME: decodeURIComponent(databaseUrl.pathname.slice(1)),
+  };
+};
+
+function parseDurationSeconds(value: string): number {
+  const match = /^(\d+)([smhd])$/.exec(value);
+  if (!match) return Number(value) || 900;
+  const amount = Number(match[1]);
+  return amount * ({ s: 1, m: 60, h: 3600, d: 86400 }[match[2]!] ?? 1);
+}

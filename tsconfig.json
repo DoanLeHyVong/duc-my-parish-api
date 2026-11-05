@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2023",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "dist",
@@ -9,8 +9,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": false
   },
-  "include": ["src", "prisma", "tests"],
+  "include": ["src", "prisma", "tests", "tool", "prisma.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

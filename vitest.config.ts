@@ -2,6 +2,9 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    exclude: ['dist/**', 'node_modules/**'],
+    environment: 'node',
+    globals: false,
+    fileParallelism: false,
+    setupFiles: ['./tests/setup-access.ts'],
   },
 });
