@@ -24,6 +24,9 @@ app.use(cors({
   credentials: true,
 }));
 app.use(pinoHttp({ logger }));
+app.get('/health', (_req, res) =>
+  res.json({ success: true, data: { status: 'ok', timestamp: new Date().toISOString() }, message: 'API hoạt động' }),
+);
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
