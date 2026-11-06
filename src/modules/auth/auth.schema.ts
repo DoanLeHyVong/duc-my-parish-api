@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const loginSchema = z.object({
   username: z.string().trim().min(3).max(100).transform((value) => value.toLowerCase()),
-  password: z.string().min(8).max(200),
+  password: z.string().min(1).max(200),
 });
 
 export const updateProfileSchema = z.object({
@@ -10,6 +10,6 @@ export const updateProfileSchema = z.object({
 });
 
 export const changePasswordSchema = z.object({
-  currentPassword: z.string().min(8).max(200),
+  currentPassword: z.string().min(1).max(200),
   newPassword: z.string().min(10).max(200),
 });

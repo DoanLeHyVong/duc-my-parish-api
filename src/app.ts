@@ -9,7 +9,7 @@ import { logger } from './config/logger.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 import { notFoundMiddleware } from './middlewares/not-found.middleware.js';
 import { apiLimiter } from './middlewares/rate-limit.middleware.js';
-import { apiRouter } from './routes/index.js';
+import { apiRouter, readiness } from './routes/index.js';
 
 export const app = express();
 export const createApp = () => app;
@@ -27,6 +27,7 @@ app.use(pinoHttp({ logger }));
 app.get('/health', (_req, res) =>
   res.json({ success: true, data: { status: 'ok', timestamp: new Date().toISOString() }, message: 'API hoạt động' }),
 );
+app.get('/ready', apiLimiter, readiness);
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

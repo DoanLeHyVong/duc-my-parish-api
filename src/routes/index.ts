@@ -21,14 +21,15 @@ export const apiRouter = Router();
 apiRouter.get('/health', (_req, res) =>
   res.json({ success: true, data: { status: 'ok', timestamp: new Date().toISOString() }, message: 'API hoạt động' }),
 );
-apiRouter.get('/ready', async (_req, res) => {
+export const readiness = async (_req: import('express').Request, res: import('express').Response) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     res.json({ success: true, data: { status: 'ready' } });
   } catch {
     res.status(503).json({ error: { code: 'NOT_READY', message: 'Cơ sở dữ liệu chưa sẵn sàng.' } });
   }
-});
+};
+apiRouter.get('/ready', readiness);
 apiRouter.use('/public/policies', publicPolicyRouter);
 apiRouter.use('/public', publicRouter);
 apiRouter.use('/auth', authRouter);

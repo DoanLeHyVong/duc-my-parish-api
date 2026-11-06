@@ -17,7 +17,8 @@
     "migration:dry-run": "tsx tool/migration/unified-import.ts --dry-run",
     "migration:apply": "tsx tool/migration/unified-import.ts --apply",
     "migration:reconcile": "tsx tool/migration/reconcile.ts",
-    "smoke:identity-migration": "tsx tool/migration/identity-auth-smoke.ts"
+    "smoke:identity-migration": "tsx tool/migration/identity-auth-smoke.ts",
+    "policies:legacy": "tsx tool/policies/import.ts"
   },
   "keywords": [],
   "author": "",

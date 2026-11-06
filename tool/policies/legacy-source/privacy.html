@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Chính sách quyền riêng tư của AppGLV — ứng dụng quản lý giáo lý của Giáo xứ Đức Mỹ.">
+  <title>Chính sách quyền riêng tư — AppGLV</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#noi-dung">Chuyển đến nội dung chính</a>
+  <header class="site-header"><div class="header-inner"><a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">✦</span><span>AppGLV</span></a><nav class="site-nav" aria-label="Điều hướng chính"><ul><li><a href="index.html">Giới thiệu</a></li><li><a href="privacy.html" aria-current="page">Quyền riêng tư</a></li><li><a href="terms.html">Điều khoản</a></li><li><a href="data-request.html">Yêu cầu dữ liệu</a></li><li><a href="support.html">Hỗ trợ</a></li></ul></nav></div></header>
+  <main id="noi-dung" class="page">
+    <h1>Chính sách quyền riêng tư</h1>
+    <p class="lede">Chính sách này mô tả cách AppGLV xử lý dữ liệu phục vụ hoạt động giáo lý tại Giáo xứ Đức Mỹ. Đây không phải tuyên bố rằng mọi nghĩa vụ pháp lý hoặc thủ tục nội bộ đang chờ phê duyệt đã hoàn tất.</p>
+    <div class="meta"><span>Cập nhật gần nhất: 04/11/2026</span><span>Phạm vi: ứng dụng Android, iOS và API AppGLV</span></div>
+    <article class="content-card">
+      <h2>1. Đơn vị vận hành và phạm vi truy cập</h2>
+      <p>AppGLV được vận hành cho hoạt động của Ban Giáo lý Giáo xứ Đức Mỹ. Ứng dụng có thể tải công khai nhưng không cho phép tự đăng ký. Chỉ người được cấp tài khoản hợp lệ mới đăng nhập; giáo lý viên chỉ truy cập lớp đang được phân công, còn Super Admin quản lý phạm vi toàn giáo xứ theo quyền được giao.</p>
+
+      <h2>2. Các nhóm dữ liệu được xử lý</h2>
+      <table><thead><tr><th>Nhóm dữ liệu</th><th>Nội dung hiện có</th><th>Mục đích</th></tr></thead><tbody>
+        <tr><td>Tài khoản giáo lý viên</td><td>Tên đăng nhập, tên hiển thị, mật khẩu đã băm, vai trò, trạng thái hoạt động, lịch sử phân công và dấu thời gian.</td><td>Xác thực, phân quyền, quản lý tài khoản và truy vết trách nhiệm.</td></tr>
+        <tr><td>Học sinh, bao gồm trẻ em</td><td>Mã nội bộ, Tên Thánh, họ và tên, lớp, năm học và lịch sử ghi danh/chuyển lớp.</td><td>Tổ chức lớp và bảo toàn lịch sử học tập.</td></tr>
+        <tr><td>Điểm danh</td><td>Lịch học/lễ, phiên theo lớp, trạng thái Chưa điểm danh/Có mặt/Vắng, người thao tác, thời điểm và lý do chỉnh sửa đã chốt.</td><td>Quản lý chuyên cần và kiểm soát chỉnh sửa.</td></tr>
+        <tr><td>Điểm và xếp loại</td><td>Cột điểm, giá trị điểm, lịch sử thay đổi, quy tắc có phiên bản, kết quả trung bình và nhãn xếp loại.</td><td>Quản lý kết quả học tập theo quy tắc được cấu hình.</td></tr>
+        <tr><td>Nhập Excel</td><td>Tên và kích thước file, mã kiểm tra, ánh xạ cột, dữ liệu dòng đã phân tích, lỗi, nghi trùng, quyết định xử lý và lịch sử import.</td><td>Xác thực, xem trước, chống nhập lặp và ghi danh an toàn.</td></tr>
+      </tbody></table>
+      <p>File Excel được đọc trong bộ nhớ để xử lý; hệ thống hiện không lưu bản file Excel gốc sau khi phân tích. AppGLV hiện không có trường ngày sinh, địa chỉ, số điện thoại, email phụ huynh hoặc file đồng ý của phụ huynh.</p>
+      <p>Khi người dùng kết nối, máy chủ phải xử lý tạm thời thông tin kỹ thuật của yêu cầu mạng như địa chỉ IP, thời điểm, đường dẫn API và mã xác thực để truyền dữ liệu, bảo vệ phiên đăng nhập và xử lý lỗi. Mã nguồn hiện không tích hợp công cụ phân tích hành vi hoặc quảng cáo. Cấu hình ghi log của hạ tầng production phải được rà soát và cập nhật tại đây trước khi công bố nếu nhà cung cấp lưu thêm dữ liệu kết nối hoặc thiết bị.</p>
+
+      <h2>3. Dữ liệu trẻ em</h2>
+      <p>Dữ liệu học sinh có thể là dữ liệu của trẻ em và chỉ được sử dụng cho hoạt động giáo lý đã nêu. AppGLV không cung cấp hồ sơ học sinh công khai. Cha mẹ, người giám hộ hoặc người đại diện hợp pháp có thể gửi yêu cầu liên quan đến dữ liệu học sinh; Ban Giáo lý phải xác minh danh tính, tư cách và thẩm quyền trước khi cung cấp hoặc thay đổi thông tin.</p>
+
+      <h2>4. Cách sử dụng và chia sẻ</h2>
+      <p>Dữ liệu được sử dụng để quản lý tài khoản, lớp, ghi danh, lịch, điểm danh, điểm số, xếp loại, báo cáo và bằng chứng kiểm soát thay đổi. Mã nguồn hiện không tích hợp quảng cáo, thanh toán, mạng quảng cáo, phân tích hành vi, đăng nhập mạng xã hội, email hoặc SMS.</p>
+      <p>Trong nội bộ, Super Admin truy cập dữ liệu theo quyền quản trị; giáo lý viên chỉ truy cập dữ liệu của lớp đang được phân công. Technical Operator được ủy quyền chỉ thực hiện công việc kỹ thuật như khôi phục dữ liệu theo yêu cầu đã được phê duyệt, không có quyền nghiệp vụ thông thường trong ứng dụng. AppGLV không bán dữ liệu học sinh hoặc giáo lý viên.</p>
+      <p>AppGLV cần hạ tầng máy chủ, cơ sở dữ liệu và sao lưu để hoạt động. Nhà cung cấp hosting/sao lưu production chưa được lựa chọn trong tài liệu hiện tại; danh tính và vai trò của bên xử lý liên quan phải được cập nhật trong chính sách trước khi công bố production nếu họ có thể xử lý dữ liệu.</p>
+
+      <h2>5. Bảo mật</h2>
+      <p>Các kiểm soát hiện có gồm băm mật khẩu, JWT có thời hạn, giới hạn thử đăng nhập, xác thực dữ liệu đầu vào, phân quyền phía máy chủ, giới hạn import, giao dịch cơ sở dữ liệu và nhật ký cho một số thay đổi quan trọng. HTTPS, sao lưu mã hóa tách biệt và kiểm thử khôi phục là yêu cầu phát hành; việc triển khai thực tế phải được xác minh trước khi vận hành production.</p>
+
+      <h2>6. Lưu giữ và xóa dữ liệu</h2>
+      <p>Giáo xứ chưa phê duyệt thời hạn lưu giữ cố định cho từng loại dữ liệu. Chính sách chi tiết đang được hoàn thiện. Trong thời gian này, lịch sử nghiệp vụ về năm học, lớp, ghi danh, điểm danh, điểm và bằng chứng kiểm soát được bảo toàn theo quy định hiện có và nhu cầu xử lý dữ liệu hợp pháp. Chính sách này không cam kết xóa hoặc giữ dữ liệu trong một khoảng thời gian chưa được phê duyệt.</p>
+      <p>Khóa tài khoản không đồng nghĩa với xóa tài khoản. Không có cơ chế xóa hàng loạt tự động. Yêu cầu xóa sẽ được xác minh và đánh giá theo loại dữ liệu; phần dữ liệu có căn cứ hợp pháp hoặc nghĩa vụ cần lưu giữ có thể được giữ lại, và người yêu cầu phải được thông báo rõ phạm vi xử lý.</p>
+
+      <h2>7. Quyền và yêu cầu dữ liệu</h2>
+      <p>Người có tài khoản, hoặc cha mẹ/người giám hộ/người đại diện hợp pháp của học sinh, có thể yêu cầu truy cập, chỉnh sửa hoặc xóa dữ liệu trong phạm vi phù hợp. Xem <a href="data-request.html">Quy trình yêu cầu dữ liệu</a>. Việc tiếp nhận yêu cầu không đồng nghĩa yêu cầu sẽ được thực hiện tự động hoặc toàn bộ trước khi xác minh.</p>
+
+      <h2>8. Liên hệ</h2>
+      {{CONTACT_CHANNELS}}
+      <p>Chính sách sẽ được cập nhật khi phạm vi dữ liệu, nhà cung cấp hạ tầng hoặc quy trình đã được phê duyệt thay đổi.</p>
+    </article>
+  </main>
+  <footer class="site-footer"><div class="footer-inner"><strong>AppGLV — Giáo xứ Đức Mỹ</strong><ul class="footer-nav"><li><a href="index.html">Giới thiệu</a></li><li><a href="terms.html">Điều khoản</a></li><li><a href="data-request.html">Yêu cầu dữ liệu</a></li><li><a href="support.html">Hỗ trợ</a></li></ul><p class="build-status">{{BUILD_STATUS}}</p></div></footer>
+</body>
+</html>
