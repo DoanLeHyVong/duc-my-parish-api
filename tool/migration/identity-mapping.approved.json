@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "parishAdminMappings": [
+    {
+      "parishAdminId": 1,
+      "resolution": "distinct",
+      "expectedSourceUsername": "admin",
+      "targetUsername": "parish_admin",
+      "approvedBy": "AppGLV Product Owner",
+      "reason": "Keep the Parish administrator independent from the AppGLV Super Admin while resolving the normalized username collision."
+    }
+  ]
+}

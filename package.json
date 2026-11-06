@@ -16,7 +16,8 @@
     "prisma:seed": "tsx prisma/seed.ts",
     "migration:dry-run": "tsx tool/migration/unified-import.ts --dry-run",
     "migration:apply": "tsx tool/migration/unified-import.ts --apply",
-    "migration:reconcile": "tsx tool/migration/reconcile.ts"
+    "migration:reconcile": "tsx tool/migration/reconcile.ts",
+    "smoke:identity-migration": "tsx tool/migration/identity-auth-smoke.ts"
   },
   "keywords": [],
   "author": "",
