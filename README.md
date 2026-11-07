@@ -1,5 +1,28 @@
 # Giáo xứ Đức Mỹ — REST API
 
+## Unified local database và cách chạy trên Windows
+
+Backend chung dùng database MySQL local `ducmy`. Sao chép `.env.example` thành `.env`, cấu hình `DATABASE_URL` và hai secret riêng `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` (mỗi secret ít nhất 24 ký tự). Không commit `.env` hoặc in secret ra log.
+
+```powershell
+Set-Location D:\AppGLV\duc-my-parish-api
+npm.cmd install
+npm.cmd run prisma:generate
+npm.cmd run prisma:migrate
+npm.cmd run dev
+```
+
+Kiểm tra sau khi khởi động:
+
+```powershell
+Invoke-WebRequest http://localhost:5000/api/v1/health
+Invoke-WebRequest http://localhost:5000/api/v1/ready
+```
+
+- API base URL: `http://localhost:5000/api/v1`
+- Không chạy `prisma:seed` trên database đã gộp nếu không chủ động muốn tạo dữ liệu seed.
+- Full AppGLV API/Postman handoff: [`docs/appglv-api-postman-handoff.md`](docs/appglv-api-postman-handoff.md).
+
 Express + TypeScript + Prisma API cho website Giáo xứ Đức Mỹ.
 
 ## Yêu cầu
@@ -19,9 +42,10 @@ Express + TypeScript + Prisma API cho website Giáo xứ Đức Mỹ.
 npm install
 npm run prisma:generate
 npm run prisma:migrate
-npm run prisma:seed
 npm run dev
 ```
+
+Chỉ chạy `npm run prisma:seed` khi chủ động khởi tạo database mới, trống. Không seed lại database `ducmy` đã gộp.
 
 API: `http://localhost:5000/api/v1`  
 Swagger: `http://localhost:5000/api-docs`
