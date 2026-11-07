@@ -14,6 +14,7 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:seed": "tsx prisma/seed.ts",
+    "admin:provision": "tsx tool/security/provision-super-admin.ts",
     "migration:dry-run": "tsx tool/migration/unified-import.ts --dry-run",
     "migration:apply": "tsx tool/migration/unified-import.ts --apply",
     "migration:reconcile": "tsx tool/migration/reconcile.ts",

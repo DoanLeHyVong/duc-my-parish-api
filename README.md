@@ -47,6 +47,31 @@ npm run dev
 
 Chỉ chạy `npm run prisma:seed` khi chủ động khởi tạo database mới, trống. Không seed lại database `ducmy` đã gộp.
 
+## Provision Super Admin local an toàn
+
+Không dùng `prisma:seed` để đổi thông tin đăng nhập. Lệnh chuyên biệt dưới đây chỉ chấp nhận `DATABASE_URL` trỏ tới database `ducmy` trên `localhost`, cập nhật đúng tài khoản `SUPER_ADMIN` hiện có trong một transaction, tăng `authVersion`, thu hồi session và ghi audit không chứa credential.
+
+Trong file `.env` bị Git ignore, cấu hình:
+
+```dotenv
+SUPER_ADMIN_SOURCE_USERNAME=admin
+SUPER_ADMIN_TARGET_USERNAME=nguyenhoangbuukim
+SUPER_ADMIN_TARGET_EMAIL=
+SUPER_ADMIN_PASSWORD=
+```
+
+`SUPER_ADMIN_TARGET_EMAIL` là tùy chọn; để trống sẽ giữ email hiện tại. `SUPER_ADMIN_PASSWORD` là bắt buộc, phải dài ít nhất 12 ký tự và không vượt quá 72 byte UTF-8. Không đặt mật khẩu trong source, tài liệu, command line hoặc log. Giá trị local đã chọn có độ đoán cao nên chỉ được dùng cho development local và phải thay bằng secret riêng, mạnh trước mọi môi trường production.
+
+Với MySQL trong XAMPP đang chạy:
+
+```powershell
+Set-Location D:\AppGLV\duc-my-parish-api
+npm.cmd run prisma:migrate:deploy
+npm.cmd run admin:provision
+```
+
+Lệnh có thể chạy lại an toàn: nó không tạo user hay role mới, vẫn giữ nguyên user ID và các quan hệ, đồng thời rotate credential và thu hồi session lần nữa. Nếu locator sai, role sai, có nhiều Super Admin, hoặc username/email đích thuộc tài khoản khác, transaction sẽ fail closed.
+
 API: `http://localhost:5000/api/v1`  
 Swagger: `http://localhost:5000/api-docs`
 
