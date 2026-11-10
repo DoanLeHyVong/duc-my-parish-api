@@ -13,7 +13,7 @@ const pages = [
   { file: 'data-request.html', slug: 'data-request', kind: 'DATA_REQUEST', sha256: '1ec560848f543608828bccaa9c61d469a3ccd60d32b23fc6e1565eca590ebb6b' },
 ] as const;
 export type LegacyPolicy = Awaited<ReturnType<typeof loadLegacyPolicies>>[number];
-const links: Record<string, string> = { 'privacy.html': '/quyen-rieng-tu', 'terms.html': '/dieu-khoan-su-dung', 'support.html': '/ho-tro', 'data-request.html': '/yeu-cau-du-lieu' };
+const links: Record<string, string> = { 'privacy.html': '/privacy', 'terms.html': '/terms', 'support.html': '/support', 'data-request.html': '/data-request' };
 export const hash = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
 
 export async function loadLegacyPolicies(directory: string) {

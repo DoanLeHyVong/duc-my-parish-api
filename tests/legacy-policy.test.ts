@@ -14,9 +14,9 @@ it('preserves all fingerprinted policies as sanitized draft input', async () => 
     'data-request',
   ]);
   expect(policies.map(({ slug, contentHash }) => [slug, contentHash])).toEqual([
-    ['privacy-policy', '1ef2c5cf55ae0aead13b5d44d6c8f32d0d976b2836141bc949d511ba5c76b1c0'],
-    ['terms-of-use', 'ca357f6f84ef7949bcfa89eab3d39c316951fb4ef1429fa20152111cd3877754'],
-    ['support', 'f81c0daaf236a9675a5da7c135c3518ca39299e6866921ef93700a4fe214e059'],
+    ['privacy-policy', 'd026ae89ba4d7aa539fa0b8afe221017148347c16caf5408e202b477a2b38c82'],
+    ['terms-of-use', '041a7642bc2bb4fcae14d0727c1963a11e3b6eac33687b826194081f429b718f'],
+    ['support', '7d8ca3a73c27c0a35c6861af5ff3771e8a87227debac78a237d4a1d78591fd3e'],
     ['data-request', 'b88306e4b9ba21fea534dcba16b0a26379e2cd8ba4c6b1df39080b07dd7988ac'],
   ]);
   for (const policy of policies) {
@@ -25,7 +25,7 @@ it('preserves all fingerprinted policies as sanitized draft input', async () => 
     expect(policy.contentHash).toMatch(/^[a-f0-9]{64}$/);
   }
   const destinations = [...new Set(policies.flatMap((policy) => [...policy.contentHtml.matchAll(/href="([^"]+)"/g)].map((match) => match[1])))].sort();
-  expect(destinations).toEqual(['/quyen-rieng-tu', '/yeu-cau-du-lieu']);
+  expect(destinations).toEqual(['/data-request', '/privacy']);
 });
 
 it('accepts only explicitly safe AppGLV database names', () => {

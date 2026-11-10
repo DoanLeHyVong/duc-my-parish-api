@@ -81,13 +81,13 @@ async function main() {
   await prisma.menuItem.deleteMany({ where: { menuId: menu.id } });
   const nav = [
     ['Trang chá»§', '/'],
-    ['Giá»›i thiá»‡u', '/gioi-thieu'],
-    ['Thông báo', '/chuyen-muc/thong-bao'],
-    ['Giá» lá»…', '/gio-le'],
-    ['Lời Chúa', '/chuyen-muc/loi-chua-hang-ngay'],
-    ['Tin tá»©c', '/chuyen-muc/tin-giao-xu'],
-    ['Thư viện', '/thu-vien'],
-    ['Liên hệ', '/lien-he'],
+    ['Giá»›i thiá»‡u', '/about'],
+    ['Thông báo', '/categories/announcements'],
+    ['Giá» lá»…', '/mass-schedule'],
+    ['Lời Chúa', '/categories/daily-word'],
+    ['Tin tá»©c', '/categories/parish-news'],
+    ['Thư viện', '/gallery'],
+    ['Liên hệ', '/contact'],
   ];
   await prisma.menuItem.createMany({
     data: nav.map(([label, url], sortOrder) => ({
@@ -148,7 +148,7 @@ async function main() {
       subtitle: 'Hiệp nhất trong đức tin — Lan tỏa yêu thương',
       imageUrl: hero,
       primaryText: 'Xem giá» lá»…',
-      primaryUrl: '/gio-le',
+      primaryUrl: '/mass-schedule',
       sortOrder,
     })),
   });
