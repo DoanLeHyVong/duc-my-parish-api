@@ -1,0 +1,8 @@
+# Production target only. Activate after ownership, readiness, and explicit approval.
+tunnel: ducmy-production
+ingress:
+  - hostname: giaoxuducmy.org
+    service: http://web:80
+  - hostname: api.giaoxuducmy.org
+    service: http://api:5000
+  - service: http_status:404

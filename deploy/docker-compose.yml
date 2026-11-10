@@ -1,0 +1,60 @@
+services:
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    env_file:
+      - ${DB_ENV_FILE:-.env.db}
+    expose:
+      - '3306'
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD-SHELL', 'healthcheck.sh --connect --innodb_initialized']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  api:
+    image: ${API_IMAGE:?API_IMAGE is required}
+    restart: unless-stopped
+    env_file:
+      - ${API_ENV_FILE:-.env.api}
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - '5000'
+    command: ['sh', '-c', 'npm run prisma:migrate:deploy && npm run start']
+    healthcheck:
+      test: ['CMD', 'node', 'deploy/healthcheck.mjs']
+      interval: 15s
+      timeout: 8s
+      retries: 10
+      start_period: 30s
+
+  web:
+    image: ${WEB_IMAGE:?WEB_IMAGE is required}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    expose:
+      - '80'
+
+  cloudflared:
+    image: cloudflare/cloudflared:2025.10.0
+    restart: unless-stopped
+    command:
+      [
+        'tunnel',
+        '--no-autoupdate',
+        'run',
+        '--token',
+        '${CLOUDFLARE_TUNNEL_TOKEN:?CLOUDFLARE_TUNNEL_TOKEN is required}',
+      ]
+    depends_on:
+      web:
+        condition: service_started
+
+volumes:
+  db_data:

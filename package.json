@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "REST API for Giáo xứ Đức Mỹ",
   "private": true,
+  "engines": {
+    "node": ">=22 <23"
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",

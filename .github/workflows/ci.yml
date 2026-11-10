@@ -1,0 +1,51 @@
+name: API CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, staging]
+
+concurrency:
+  group: api-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: ci-root-password
+          MARIADB_DATABASE: appglv_unified_test
+          MARIADB_USER: ci
+          MARIADB_PASSWORD: ci-password
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - name: Apply disposable test migration
+        run: npm run prisma:migrate:deploy
+        env:
+          DATABASE_URL: mysql://ci:ci-password@127.0.0.1:3306/appglv_unified_test
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test
+        env:
+          NODE_ENV: test
+          DATABASE_URL: mysql://ci:ci-password@127.0.0.1:3306/appglv_unified_test
+          JWT_ACCESS_SECRET: ci-access-secret-please-use-only-in-ci
+          JWT_REFRESH_SECRET: ci-refresh-secret-please-use-only-in-ci
+          CLIENT_URL: http://localhost:5173
+      - run: npm audit --omit=dev --audit-level=high
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
