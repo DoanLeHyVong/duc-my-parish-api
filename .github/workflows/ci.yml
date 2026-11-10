@@ -32,6 +32,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run prisma:generate
+        env:
+          DATABASE_URL: mysql://ci:ci-password@127.0.0.1:3306/appglv_unified_test
       - name: Apply disposable test migration
         run: npm run prisma:migrate:deploy
         env:

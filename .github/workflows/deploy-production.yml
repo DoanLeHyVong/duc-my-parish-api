@@ -6,13 +6,23 @@ on:
     types: [completed]
     branches: [main]
 
+permissions:
+  contents: read
+  packages: write
+
 concurrency:
   group: api-production-deploy
   cancel-in-progress: false
 
 jobs:
   deploy:
-    if: github.event.workflow_run.conclusion == 'success' && vars.PRODUCTION_DEPLOY_ENABLED == 'true'
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      vars.PRODUCTION_DEPLOY_ENABLED == 'true' &&
+      vars.PRODUCTION_READINESS_CONFIRMED == 'true'
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -25,6 +35,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run prisma:generate
+        env:
+          DATABASE_URL: mysql://ci:ci-password@127.0.0.1:3306/appglv_unified_test
       - run: npm run lint
       - run: npm run build
       - uses: docker/login-action@v3
@@ -44,7 +56,8 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            set -eu
             cd "${{ vars.PRODUCTION_DEPLOY_PATH }}"
             export API_IMAGE="ghcr.io/${{ github.repository_owner }}/duc-my-parish-api:production-${{ github.event.workflow_run.head_sha }}"
             ./scripts/deploy.sh .env.production
-            API_URL=https://api.giaoxuducmy.org WEB_URL=https://giaoxuducmy.org ./scripts/smoke.sh
+            API_URL=https://api.giaoxuducmy.org EXPECTED_API_URL=https://api.giaoxuducmy.org/api/v1 WEB_URL=https://giaoxuducmy.org ./scripts/smoke.sh

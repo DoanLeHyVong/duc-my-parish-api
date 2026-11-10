@@ -4,7 +4,7 @@ This directory contains deployment templates for the unified API, Parish Web ima
 
 ## VPS layout
 
-Use a separate directory and Compose project for each environment, for example `/opt/ducmy/staging` and `/opt/ducmy/production`. Copy `docker-compose.yml`, the matching `.env.*.example` files, and the checked-in scripts/config examples. Create real `.env.staging`, `.env.staging.db`, `.env.staging.api` (and production equivalents) outside Git with restrictive permissions.
+Use a separate directory and Compose project for each environment, for example `/opt/ducmy/staging` and `/opt/ducmy/production`. Copy `docker-compose.yml`, the matching `.env.*.example` files, and the checked-in scripts/config examples. Create real `.env.staging`, `.env.staging.db`, `.env.staging.api` (and production equivalents) outside Git with restrictive permissions. The deployment env must set `DEPLOY_ENVIRONMENT` to the matching environment and provide a read-only `GHCR_TOKEN_FILE` outside the deployment directory.
 
 The database service is reachable only inside the Compose network; no `ports` mapping is defined for MariaDB. Use different volumes, database names, JWT secrets, Cloudflare tunnel tokens, and deploy paths for staging and production.
 
@@ -12,9 +12,9 @@ The database service is reachable only inside the Compose network; no `ports` ma
 
 1. Verify the VPS is personally owned/authorized, Docker Compose is installed, and firewall rules expose only SSH and the Cloudflare connector.
 2. Generate long random values for `MARIADB_PASSWORD`, `MARIADB_ROOT_PASSWORD`, `JWT_ACCESS_SECRET`, and `JWT_REFRESH_SECRET`. Put them only in the VPS secret files; URL-encode database password characters in `DATABASE_URL`.
-3. Set `API_IMAGE` and `WEB_IMAGE` to the GitHub Container Registry tags produced by the workflows.
+3. Set `API_IMAGE` and `WEB_IMAGE` to the GitHub Container Registry tags produced by the workflows. Authenticate the VPS with a least-privilege GitHub token stored at `GHCR_TOKEN_FILE`; never put the token in the env file or command line.
 4. Supply the `ducmy-staging` Cloudflare Tunnel token only in the VPS environment file. Route `giaoxu.hyvongofficial.online` to `web:80` and `api.hyvongofficial.online` to `api:5000` in Cloudflare.
-5. Run `./scripts/deploy.sh .env.staging`, then `API_URL=https://api.hyvongofficial.online WEB_URL=https://giaoxu.hyvongofficial.online ./scripts/smoke.sh`.
+5. Run `./scripts/deploy.sh .env.staging`, then `API_URL=https://api.hyvongofficial.online EXPECTED_API_URL=https://api.hyvongofficial.online/api/v1 WEB_URL=https://giaoxu.hyvongofficial.online ./scripts/smoke.sh`. The deploy script serializes API/Web updates, preserves both current image tags, waits for health, verifies running image references, and backs up an existing database before migrations.
 
 ## Backup and rollback
 
@@ -24,7 +24,7 @@ Application rollback is `./scripts/rollback.sh .env.staging <previous-api-image>
 
 ## Synthetic review accounts
 
-Create a credentials directory outside the repository, then run the script against the staging Compose service with a mounted output path:
+Create a credentials directory outside the repository, then run the script against the staging Compose service with a mounted output path. The API image includes the Prisma client source and development CLI tools needed by this one-off provisioning command:
 
 ```sh
 mkdir -p /var/lib/ducmy-secrets
@@ -37,6 +37,8 @@ chmod 600 /var/lib/ducmy-secrets/accounts.json
 ```
 
 The script generates unique passwords in memory and writes them once to the operator-controlled file. Do not paste the file into chat, commit it, or put it in GitHub Actions logs.
+
+Keep `PRODUCTION_DEPLOY_ENABLED=false` and `PRODUCTION_READINESS_CONFIRMED=false` until the release evidence is complete and the protected GitHub Environment has an approved reviewer.
 
 ## Cloudflare and legacy audit
 
