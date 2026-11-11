@@ -1,5 +1,7 @@
 # Giáo xứ Đức Mỹ — REST API
 
+> Current deployment: `staging` and `main` run CI only; reviewed `main` artifacts are deployed manually via `deploy/manual/`. No Docker runtime or automatic VPS deployment is active.
+
 ## Unified local database và cách chạy trên Windows
 
 Backend chung dùng database MySQL local `ducmy`. Sao chép `.env.example` thành `.env`, cấu hình `DATABASE_URL` và hai secret riêng `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` (mỗi secret ít nhất 24 ký tự). Không commit `.env` hoặc in secret ra log.

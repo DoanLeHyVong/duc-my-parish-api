@@ -40,6 +40,7 @@ jobs:
           DATABASE_URL: mysql://ci:ci-password@127.0.0.1:3306/appglv_unified_test
       - run: npm run lint
       - run: npm run build
+      - run: node --test deploy/manual/tests/check.mjs
       - run: npm test
         env:
           NODE_ENV: test
@@ -51,3 +52,17 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Package manual Linux release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          tar -czf "ducmy-api-${GITHUB_SHA}.tar.gz" dist prisma prisma.config.ts package.json package-lock.json node_modules
+          sha256sum "ducmy-api-${GITHUB_SHA}.tar.gz" > "ducmy-api-${GITHUB_SHA}.tar.gz.sha256"
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          name: ducmy-api-${{ github.sha }}
+          path: |
+            ducmy-api-${{ github.sha }}.tar.gz
+            ducmy-api-${{ github.sha }}.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 14

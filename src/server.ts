@@ -3,7 +3,7 @@ import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { prisma } from './config/prisma.js';
 
-const server = app.listen(env.PORT, '0.0.0.0', () => {
+const server = app.listen(env.PORT, env.NODE_ENV === 'production' ? '127.0.0.1' : '0.0.0.0', () => {
   logger.info({ port: env.PORT }, 'Giáo xứ Đức Mỹ API đã sẵn sàng');
 });
 

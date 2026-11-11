@@ -1,0 +1,8 @@
+[Unit]
+Description=Alert on Duc My backup failure (%i)
+
+[Service]
+Type=oneshot
+User=deploy
+Group=deploy
+ExecStart=/opt/ducmy/api/manual/backup-alert.sh %i

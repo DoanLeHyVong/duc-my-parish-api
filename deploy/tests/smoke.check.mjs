@@ -1,8 +1,9 @@
 import { createServer } from 'node:http';
+import process from 'node:process';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { test } from 'node:test';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, URL } from 'node:url';
 
 const run = promisify(execFile);
 const script = fileURLToPath(new URL('../scripts/smoke.sh', import.meta.url));

@@ -1,0 +1,26 @@
+[Unit]
+Description=Duc My Parish API
+After=network.target mariadb.service
+Requires=mariadb.service
+
+[Service]
+Type=simple
+User=deploy
+Group=deploy
+WorkingDirectory=/opt/ducmy/api/current
+EnvironmentFile=/etc/ducmy/api.env
+Environment=NODE_OPTIONS=--max-old-space-size=192
+ExecStart=/opt/node-v22/bin/node /opt/ducmy/api/current/dist/server.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/ducmy/api
+PrivateTmp=true
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

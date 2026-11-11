@@ -1,3 +1,7 @@
+# DEPRECATED: Docker/Compose reference only
+
+The owner-approved runtime is native Ubuntu with manual SSH releases. No workflow invokes the historical Compose procedures below. Use `deploy/manual/README.md` and the workspace `ducmy-manual-vps-deployment-guide.md` instead.
+
 # Single-VPS deployment (not activated)
 
 The approved target is one authorized Vultr Ubuntu VPS, one Compose project, one MariaDB database, one API, one Nginx-served Web image, and one Cloudflare tunnel named `ducmy-production`. Current hosts: `giaoxu.hyvongofficial.online` (Web) and `api.hyvongofficial.online` (API). No remote deployment or DNS change has been performed.

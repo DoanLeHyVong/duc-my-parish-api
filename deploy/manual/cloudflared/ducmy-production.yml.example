@@ -1,0 +1,8 @@
+tunnel: REPLACE_WITH_OWNER_VERIFIED_TUNNEL_ID
+credentials-file: /etc/cloudflared/ducmy-production.json
+ingress:
+  - hostname: giaoxu.hyvongofficial.online
+    service: http://127.0.0.1:8080
+  - hostname: api.hyvongofficial.online
+    service: http://127.0.0.1:5000
+  - service: http_status:404
