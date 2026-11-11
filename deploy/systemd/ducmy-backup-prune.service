@@ -1,0 +1,11 @@
+[Unit]
+Description=Duc My weekly off-VPS backup retention
+OnFailure=ducmy-backup-alert@%n.service
+
+[Service]
+Type=oneshot
+User=ducmy
+Group=docker
+WorkingDirectory=/opt/ducmy/production
+Environment=PRUNE_BACKUPS=true
+ExecStart=/opt/ducmy/production/scripts/backup-offsite.sh .env.production

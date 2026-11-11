@@ -29,6 +29,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Verify this is still the latest main commit
+        shell: bash
+        run: |
+          git fetch origin main --depth=1
+          test "$(git rev-parse FETCH_HEAD)" = "${{ github.event.workflow_run.head_sha }}"
+      - name: Normalize GHCR image owner
+        shell: bash
+        run: echo "IMAGE_REPO=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/duc-my-parish-api" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -48,16 +56,37 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/duc-my-parish-api:production-${{ github.event.workflow_run.head_sha }}
+          tags: ${{ env.IMAGE_REPO }}:production-${{ github.event.workflow_run.head_sha }}
+      - name: Recheck main before deployment
+        shell: bash
+        run: |
+          git fetch origin main --depth=1
+          test "$(git rev-parse FETCH_HEAD)" = "${{ github.event.workflow_run.head_sha }}"
+      - name: Require pinned VPS host key
+        shell: bash
+        env:
+          VPS_HOST_FINGERPRINT: ${{ secrets.VPS_HOST_FINGERPRINT }}
+        run: test -n "$VPS_HOST_FINGERPRINT"
+      - uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          fingerprint: ${{ secrets.VPS_HOST_FINGERPRINT }}
+          source: deploy
+          target: ${{ vars.PRODUCTION_DEPLOY_PATH }}/releases/${{ github.event.workflow_run.head_sha }}
       - uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.VPS_HOST }}
           port: ${{ secrets.VPS_PORT || 22 }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          fingerprint: ${{ secrets.VPS_HOST_FINGERPRINT }}
           script: |
             set -eu
             cd "${{ vars.PRODUCTION_DEPLOY_PATH }}"
-            export API_IMAGE="ghcr.io/${{ github.repository_owner }}/duc-my-parish-api:production-${{ github.event.workflow_run.head_sha }}"
-            ./scripts/deploy.sh .env.production
-            API_URL=https://api.giaoxuducmy.org EXPECTED_API_URL=https://api.giaoxuducmy.org/api/v1 WEB_URL=https://giaoxuducmy.org ./scripts/smoke.sh
+            export COMPOSE_FILE="$PWD/docker-compose.yml"
+            export DEPLOY_CONFIG_SOURCE="$PWD/releases/${{ github.event.workflow_run.head_sha }}/deploy"
+            export API_IMAGE="${{ env.IMAGE_REPO }}:production-${{ github.event.workflow_run.head_sha }}"
+            "$DEPLOY_CONFIG_SOURCE/scripts/deploy.sh" .env.production

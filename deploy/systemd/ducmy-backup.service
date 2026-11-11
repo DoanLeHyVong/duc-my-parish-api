@@ -1,0 +1,10 @@
+[Unit]
+Description=Duc My off-VPS database backup
+OnFailure=ducmy-backup-alert@%n.service
+
+[Service]
+Type=oneshot
+User=ducmy
+Group=docker
+WorkingDirectory=/opt/ducmy/production
+ExecStart=/opt/ducmy/production/scripts/backup-offsite.sh .env.production

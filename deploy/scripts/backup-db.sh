@@ -28,4 +28,4 @@ OUTPUT="$BACKUP_DIR/ducmy-$STAMP-$$.sql"
 mv "$TEMP_OUTPUT" "$OUTPUT"
 trap - EXIT
 sha256sum "$OUTPUT" > "$OUTPUT.sha256"
-printf 'Backup created outside the repository: %s\n' "$OUTPUT"
+printf '%s\n' "$OUTPUT"

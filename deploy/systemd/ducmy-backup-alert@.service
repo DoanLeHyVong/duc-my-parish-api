@@ -1,0 +1,8 @@
+[Unit]
+Description=Alert operator after Duc My backup failure (%i)
+
+[Service]
+Type=oneshot
+User=ducmy
+Environment=ALERT_WEBHOOK_FILE=/etc/ducmy/production/alert-webhook
+ExecStart=/opt/ducmy/production/scripts/notify-backup-failure.sh %i

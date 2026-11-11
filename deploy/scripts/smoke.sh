@@ -16,4 +16,7 @@ case "$WEB_ASSET_PATH" in
   *) WEB_ASSET_URL="$WEB_URL/$WEB_ASSET_PATH" ;;
 esac
 curl $CURL_ARGS "$WEB_ASSET_URL" | grep -F "$EXPECTED_API_URL" >/dev/null
+curl $CURL_ARGS "$WEB_ASSET_URL" | grep -F "$WEB_URL" >/dev/null
+curl $CURL_ARGS "$WEB_URL/sitemap.xml" | grep -F "$WEB_URL" >/dev/null
+curl $CURL_ARGS "$WEB_URL/robots.txt" | grep -F "$WEB_URL/sitemap.xml" >/dev/null
 printf 'Public smoke checks passed for API and Web.\n'

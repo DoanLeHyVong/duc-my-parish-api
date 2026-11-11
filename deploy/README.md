@@ -1,45 +1,31 @@
-# Docker Compose deployment
+# Single-VPS deployment (not activated)
 
-This directory contains deployment templates for the unified API, Parish Web image, private MariaDB, and a dedicated Cloudflare Tunnel. It does not contain credentials or a live tunnel token.
+The approved target is one authorized Vultr Ubuntu VPS, one Compose project, one MariaDB database, one API, one Nginx-served Web image, and one Cloudflare tunnel named `ducmy-production`. Current hosts: `giaoxu.hyvongofficial.online` (Web) and `api.hyvongofficial.online` (API). No remote deployment or DNS change has been performed.
 
-## VPS layout
+## GitHub gates
 
-Use a separate directory and Compose project for each environment, for example `/opt/ducmy/staging` and `/opt/ducmy/production`. Copy `docker-compose.yml`, the matching `.env.*.example` files, and the checked-in scripts/config examples. Create real `.env.staging`, `.env.staging.db`, `.env.staging.api` (and production equivalents) outside Git with restrictive permissions. The deployment env must set `DEPLOY_ENVIRONMENT` to the matching environment and provide a read-only `GHCR_TOKEN_FILE` outside the deployment directory.
+`staging` runs CI only. Successful `main` CI can trigger the deploy workflow, but both **repository-level** variables `PRODUCTION_DEPLOY_ENABLED` and `PRODUCTION_READINESS_CONFIRMED` must be `true`. Leave both unset or `false` until the owner verifies VPS ownership, backup/restore, tunnel routing, production credentials and smoke tests. GitHub Environment `production` holds SSH secrets. A required reviewer blocks every run; remove that per-run approval only when automatic deployment is activated. Protect `main` with required CI checks. Deploy workflows must be present on the default branch to receive `workflow_run` events.
 
-The database service is reachable only inside the Compose network; no `ports` mapping is defined for MariaDB. Use different volumes, database names, JWT secrets, Cloudflare tunnel tokens, and deploy paths for staging and production.
+Images are built in Actions and pushed to GHCR with `production-<commit SHA>` tags. VPS secrets `VPS_HOST`, `VPS_PORT`, `VPS_USER`, `VPS_SSH_KEY` belong in each repository's production Environment. Set repository variable `PRODUCTION_DEPLOY_PATH` to the same project path in API and Web repositories. Place read-only GHCR pull credentials in `/etc/ducmy/production/ghcr-token` on the VPS, never in Git. Initial deployment requires both image tags to exist in the Compose env file.
 
-## First staging setup
+## One VPS project
 
-1. Verify the VPS is personally owned/authorized, Docker Compose is installed, and firewall rules expose only SSH and the Cloudflare connector.
-2. Generate long random values for `MARIADB_PASSWORD`, `MARIADB_ROOT_PASSWORD`, `JWT_ACCESS_SECRET`, and `JWT_REFRESH_SECRET`. Put them only in the VPS secret files; URL-encode database password characters in `DATABASE_URL`.
-3. Set `API_IMAGE` and `WEB_IMAGE` to the GitHub Container Registry tags produced by the workflows. Authenticate the VPS with a least-privilege GitHub token stored at `GHCR_TOKEN_FILE`; never put the token in the env file or command line.
-4. Supply the `ducmy-staging` Cloudflare Tunnel token only in the VPS environment file. Route `giaoxu.hyvongofficial.online` to `web:80` and `api.hyvongofficial.online` to `api:5000` in Cloudflare.
-5. Run `./scripts/deploy.sh .env.staging`, then `API_URL=https://api.hyvongofficial.online EXPECTED_API_URL=https://api.hyvongofficial.online/api/v1 WEB_URL=https://giaoxu.hyvongofficial.online ./scripts/smoke.sh`. The deploy script serializes API/Web updates, preserves both current image tags, waits for health, verifies running image references, and backs up an existing database before migrations.
+Use one `/opt/ducmy/production` directory and `COMPOSE_PROJECT_NAME=ducmy-production`. Copy `docker-compose.yml`, `.env.production*.example` and `scripts/` there, creating real `.env.production`, `.env.production.api`, `.env.production.db` with restrictive permissions. Use one `ducmy` MariaDB database. Generate random database/JWT secrets; URL-encode the database password in `DATABASE_URL`. MariaDB has no published port. Set the `ducmy-production` tunnel to Web `http://web:80` and API `http://api:5000`. No staging tunnel or database is needed.
 
-## Backup and rollback
+For 1 vCPU / 2 GB, Compose limits MariaDB to 640 MB, API to 512 MB (Node heap 384 MB), Nginx to 96 MB, and cloudflared to 128 MB. Measure actual memory use before activation. Enable persistent swap (for example 1–2 GB), restrict SSH, patch Ubuntu and monitor memory, disk, container health, backup age and tunnel health. Swap is emergency headroom. The exact backup provider and monitoring system remain operator choices.
 
-Run `BACKUP_DIR=/var/backups/ducmy ./scripts/backup-db.sh .env.staging` before migrations or release changes. The script writes SQL and SHA-256 files outside the repository with mode 600. Store an off-host copy according to the approved backup policy.
+## Off-VPS backup and rollback
 
-Application rollback is `./scripts/rollback.sh .env.staging <previous-api-image> <previous-web-image>`. It does not reverse database migrations. Stop and assess if the new migration is not compatible with the previous application release.
+Install `restic` and configure an off-VPS repository (`s3:`, `b2:`, `rest:`, `sftp:`, `rclone:`, `azure:`, `gs:` or `swift:`). Keep its password at `/etc/ducmy/production/restic-password`; store provider credentials outside Git. Initialize using process-local environment, then verify `restic snapshots` and restore to a disposable database. `deploy.sh` refuses to proceed if off-VPS storage is unavailable. On an existing DB, it creates a SQL dump, SHA-256 file and off-VPS restic snapshot before changing image tags or running migrations.
 
-## Synthetic review accounts
+Install the example `systemd/ducmy-backup*` units into `/etc/systemd/system/` after reviewing the service account, paths and permissions, then run `systemctl daemon-reload` and `systemctl enable --now ducmy-backup.timer ducmy-backup-prune.timer`. The first timer runs every six hours; weekly pruning keeps off-VPS snapshots within 30 days plus six monthly snapshots. Pruning is kept off the six-hour path on the small VPS. After a successful off-VPS snapshot, local SQL dumps older than 48 hours are removed. Configure `/etc/ducmy/production/alert-webhook` as a mode-600 file containing the owner-approved HTTPS JSON webhook; the alert service sends only the failed unit name. Test failure alerts and a disposable restore before activating production. Rehearse restore quarterly and after major infrastructure changes. Scheduling alone does not prove the approved RPO ≤ 6 hours / RTO ≤ 8 hours.
 
-Create a credentials directory outside the repository, then run the script against the staging Compose service with a mounted output path. The API image includes the Prisma client source and development CLI tools needed by this one-off provisioning command:
+After authorization run `./scripts/deploy.sh .env.production`, then `API_URL=https://api.hyvongofficial.online EXPECTED_API_URL=https://api.hyvongofficial.online/api/v1 WEB_URL=https://giaoxu.hyvongofficial.online ./scripts/smoke.sh`. Application rollback: `./scripts/rollback.sh .env.production <previous-api-image> <previous-web-image>`. It does not reverse database migrations; assess compatibility first.
 
-```sh
-mkdir -p /var/lib/ducmy-secrets
-chmod 700 /var/lib/ducmy-secrets
-docker compose --env-file .env.staging -f docker-compose.yml run --rm \
-  -v /var/lib/ducmy-secrets:/run/synthetic \
-  -e SYNTHETIC_CREDENTIALS_FILE=/run/synthetic/accounts.json \
-  api npx tsx tool/deploy/provision-synthetic-accounts.ts
-chmod 600 /var/lib/ducmy-secrets/accounts.json
-```
+The local positive/negative smoke contract check is `node --test deploy/tests/smoke.check.mjs`; it does not require VPS access.
 
-The script generates unique passwords in memory and writes them once to the operator-controlled file. Do not paste the file into chat, commit it, or put it in GitHub Actions logs.
+The API workflow uploads the versioned `deploy/` bundle to the VPS before deployment. Its script holds the shared lock while backing up the current database, applying the new Compose/scripts, updating images and running public smoke checks. Web deployments use the same lock and current bundle. Pin the VPS SSH host fingerprint in both GitHub Environments as `VPS_HOST_FINGERPRINT`. Keep `PUBLIC_API_URL` and `PUBLIC_WEB_URL` without trailing slashes in both GitHub variables and the VPS env file. Initial operator setup must provision the latest bundle and real env files before the gate is opened. If a live staging environment exists despite the earlier blocked report, stop and reconcile/restore its data and verify tunnel route ownership before switching traffic; these templates do not migrate live data automatically.
 
-Keep `PRODUCTION_DEPLOY_ENABLED=false` and `PRODUCTION_READINESS_CONFIRMED=false` until the release evidence is complete and the protected GitHub Environment has an approved reviewer.
+## Mobile and future domains
 
-## Cloudflare and legacy audit
-
-Export the zone records, tunnel inventory, and published routes before any change. This workflow only audits and exports legacy Tekino resources; it does not delete them. Never remove MX, SPF, DKIM, DMARC, company-serving routes, or resources with ambiguous ownership.
+Flutter release builds use `API_BASE_URL=https://api.hyvongofficial.online/api/v1` and `PUBLIC_WEB_BASE_URL=https://giaoxu.hyvongofficial.online`. These are compiled into the app. A later API domain switch requires a new app release unless secure remote configuration is designed separately. When the owner later acquires `giaoxuducmy.org`, update GitHub `PUBLIC_API_URL`/`PUBLIC_WEB_URL`, VPS `CLIENT_URL`, Web build args, Compose public URLs, Cloudflare DNS/tunnel, HTTPS, policy URLs and Flutter release config together. Do not switch now. Tekino resources remain untouched.

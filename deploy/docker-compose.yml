@@ -2,6 +2,8 @@ services:
   db:
     image: mariadb:11.4
     restart: unless-stopped
+    mem_limit: 640m
+    command: ['--innodb-buffer-pool-size=128M', '--max-connections=30', '--performance-schema=OFF']
     env_file:
       - ${DB_ENV_FILE:-.env.db}
     expose:
@@ -17,6 +19,9 @@ services:
   api:
     image: ${API_IMAGE:?API_IMAGE is required}
     restart: unless-stopped
+    mem_limit: 512m
+    environment:
+      NODE_OPTIONS: --max-old-space-size=384
     env_file:
       - ${API_ENV_FILE:-.env.api}
     depends_on:
@@ -35,6 +40,7 @@ services:
   web:
     image: ${WEB_IMAGE:?WEB_IMAGE is required}
     restart: unless-stopped
+    mem_limit: 96m
     depends_on:
       api:
         condition: service_healthy
@@ -44,6 +50,7 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:2025.10.0
     restart: unless-stopped
+    mem_limit: 128m
     environment:
       TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:?CLOUDFLARE_TUNNEL_TOKEN is required}
     command: ['tunnel', '--no-autoupdate', 'run']

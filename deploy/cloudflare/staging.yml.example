@@ -1,9 +1,0 @@
-# Reference configuration for the Cloudflare dashboard or cloudflared config.
-# Do not commit tunnel credentials. The Compose service uses CLOUDFLARE_TUNNEL_TOKEN.
-tunnel: ducmy-staging
-ingress:
-  - hostname: giaoxu.hyvongofficial.online
-    service: http://web:80
-  - hostname: api.hyvongofficial.online
-    service: http://api:5000
-  - service: http_status:404
