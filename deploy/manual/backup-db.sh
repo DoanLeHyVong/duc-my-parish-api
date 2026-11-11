@@ -2,6 +2,7 @@
 set -euo pipefail
 umask 077
 source /etc/ducmy/restic.env
+[[ "${RESTIC_REPOSITORY:-}" =~ ^(s3:|sftp:|rest:https://|b2:|azure:|gs:|swift:|rclone:) ]] || { echo 'An off-VPS restic repository is required.' >&2; exit 1; }
 DIR=/var/backups/ducmy
 mkdir -p "$DIR"
 FILE="$DIR/ducmy-$(date -u +%Y%m%dT%H%M%SZ).sql"

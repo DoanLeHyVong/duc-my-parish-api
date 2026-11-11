@@ -11,8 +11,20 @@ const shell = process.platform === 'win32' ? 'C:/Program Files/Git/bin/bash.exe'
 
 test('CI cannot start an automatic deployment or publish an image', () => {
   const workflow = readFileSync(path.join(root, '.github/workflows/ci.yml'), 'utf8');
-  assert.match(workflow, /branches: \[main, staging\]/);
+  assert.match(workflow, /branches: \[main\]/);
+  assert.doesNotMatch(workflow, /staging/);
   assert.doesNotMatch(workflow, /workflow_run|ssh-action|scp-action|build-push-action|docker\/login-action/);
+  assert.match(workflow, /if: github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'/);
+});
+
+test('API release backs up before migration and scheduled retention groups changing SQL paths', () => {
+  const release = readFileSync(path.join(root, 'deploy/manual/api-release.sh'), 'utf8');
+  const prune = readFileSync(path.join(root, 'deploy/manual/backup-prune.sh'), 'utf8');
+  const backupAt = release.indexOf('restic backup "$BACKUP"');
+  const migrateAt = release.indexOf('prisma migrate deploy');
+  assert.ok(backupAt >= 0 && migrateAt > backupAt);
+  assert.match(release, /An off-VPS restic repository is required/);
+  assert.match(prune, /--group-by host --keep-within 30d --keep-monthly 6/);
 });
 
 test('API release fails closed when archive or backup configuration is missing', () => {

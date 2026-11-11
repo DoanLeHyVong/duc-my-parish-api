@@ -1,6 +1,6 @@
 # Giáo xứ Đức Mỹ — REST API
 
-> Current deployment: `staging` and `main` run CI only; reviewed `main` artifacts are deployed manually via `deploy/manual/`. No Docker runtime or automatic VPS deployment is active.
+> Current deployment: `main` and pull requests targeting `main` run CI only; reviewed `main` artifacts are deployed manually via `deploy/manual/`. No Docker runtime or automatic VPS deployment is active.
 
 ## Unified local database và cách chạy trên Windows
 

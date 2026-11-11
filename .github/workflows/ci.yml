@@ -2,8 +2,9 @@ name: API CI
 
 on:
   pull_request:
+    branches: [main]
   push:
-    branches: [main, staging]
+    branches: [main]
 
 concurrency:
   group: api-ci-${{ github.ref }}

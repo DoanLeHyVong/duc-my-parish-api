@@ -33,7 +33,10 @@ source /etc/ducmy/restic.env
 source "$ENV_FILE"
 set +a
 [[ "${NODE_ENV:-}" == production && "${PORT:-}" == 5000 && "${DATABASE_URL:-}" == mysql://* ]] || { echo 'Invalid production API environment.' >&2; exit 1; }
+[[ "${RESTIC_REPOSITORY:-}" =~ ^(s3:|sftp:|rest:https://|b2:|azure:|gs:|swift:|rclone:) ]] || { echo 'An off-VPS restic repository is required.' >&2; exit 1; }
 /opt/node-v22/bin/node -e 'const u = new URL(process.env.DATABASE_URL); if (!(["127.0.0.1", "localhost"].includes(u.hostname) && u.pathname === "/ducmy_production")) { console.error("DATABASE_URL must target local ducmy_production."); process.exit(1); }' || exit 1
+cd "$TARGET"
+/opt/node-v22/bin/node --input-type=module -e 'await import("./dist/config/env.js")' >/dev/null || { echo 'API environment validation failed before migration.' >&2; exit 1; }
 restic snapshots >/dev/null
 BACKUP="$BACKUP_DIR/ducmy-$(date -u +%Y%m%dT%H%M%SZ).sql"
 mariadb-dump --defaults-extra-file=/etc/ducmy/mariadb-backup.cnf --single-transaction --routines --triggers --events ducmy_production > "$BACKUP"
@@ -42,7 +45,6 @@ sha256sum "$BACKUP" > "$BACKUP.sha256"
 restic backup "$BACKUP" "$BACKUP.sha256" --tag ducmy --tag predeploy >/dev/null
 
 OLD=$(readlink "$BASE/current" || true)
-cd "$TARGET"
 if ! ./node_modules/.bin/prisma migrate deploy; then
   curl --fail --silent --show-error http://127.0.0.1:5000/ready >/dev/null || true
   echo 'Prisma migration failed; current application unchanged. Inspect database migration state and readiness before retrying.' >&2
