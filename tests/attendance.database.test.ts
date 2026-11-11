@@ -315,7 +315,9 @@ describe("attendance management with MariaDB", () => {
     expect((await request(app).post(`/api/v1/admin/attendance/sessions/${session.id}/finalize`).set(teacher()).send({ requestId: "finalize-denied", revision: 0 })).status).toBe(403);
     const finalized = await request(app).post(`/api/v1/admin/attendance/sessions/${session.id}/finalize`).set(admin()).send({ requestId: "finalize-request", revision: 0 });
     expect(finalized.body.data.status).toBe("FINALIZED");
-    const recordId = session.records[0].id;
+    const presentRecord = session.records.find((record) => record.state === AttendanceState.PRESENT);
+    expect(presentRecord).toBeDefined();
+    const recordId = presentRecord!.id;
     expect((await request(app).post(`/api/v1/admin/attendance/records/${recordId}/correct`).set(admin()).send({ requestId: "correct-invalid", state: "ABSENT", reason: "" })).status).toBe(422);
     const corrected = await request(app).post(`/api/v1/admin/attendance/records/${recordId}/correct`).set(admin()).send({ requestId: "correct-request", state: "ABSENT", reason: "Gia đình báo lại sau Thánh lễ" });
     expect(corrected.body.data.state).toBe("ABSENT");
