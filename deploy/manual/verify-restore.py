@@ -24,14 +24,24 @@ tables = query(
     f"WHERE table_schema='{database}' AND table_type='BASE TABLE' ORDER BY table_name"
 )
 with Path(dump).open("r", encoding="utf-8", errors="replace") as source:
-    expected = sum(1 for line in source if line.startswith("CREATE TABLE "))
-if not tables or len(tables) != expected:
+    expected = 0
+    source_counts = []
+    for line in source:
+        if line.startswith("CREATE TABLE "):
+            expected += 1
+        elif line.startswith("-- appglv-source-tables="):
+            source_counts.append(line.strip())
+if len(source_counts) != 1 or not re.fullmatch(r"-- appglv-source-tables=\d+", source_counts[0]):
+    raise SystemExit("SQL dump lacks a valid source table count")
+if int(source_counts[0].split("=", 1)[1]) != expected:
+    raise SystemExit("SQL dump table count differs from its source inventory")
+if len(tables) != expected:
     raise SystemExit("Restored table count does not match SQL dump")
 
 total_rows = 0
 for (table,) in tables:
     total_rows += int(query(f"SELECT COUNT(*) FROM {ident(database)}.{ident(table)}")[0][0])
-if total_rows == 0:
+if tables and total_rows == 0:
     raise SystemExit("Restored database has no rows")
 
 keys = query(
@@ -43,6 +53,8 @@ keys = query(
 groups = {}
 for constraint, table, column, parent, parent_column in keys:
     groups.setdefault((constraint, table, parent), []).append((column, parent_column))
+if not tables and groups:
+    raise SystemExit("Empty database restore has unexpected foreign keys")
 for (_, table, parent), columns in groups.items():
     joins = " AND ".join(f"c.{ident(c)} = p.{ident(p)}" for c, p in columns)
     present = " AND ".join(f"c.{ident(c)} IS NOT NULL" for c, _ in columns)

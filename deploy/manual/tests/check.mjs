@@ -79,7 +79,7 @@ test('backup prepare creates a nonempty dump and refuses an empty dump', () => {
   try {
     mkdirSync(bin);
     writeFileSync(cnf, '[client]\n');
-    writeFileSync(path.join(bin, 'mariadb'), '#!/usr/bin/env bash\n[[ "$*" == *"engine <>"* ]] && echo 0 || echo 100\n');
+    writeFileSync(path.join(bin, 'mariadb'), '#!/usr/bin/env bash\nif [[ "$*" == *"engine <>"* ]]; then echo 0; elif [[ "$*" == *"SUM(data_length"* ]]; then echo 100; else echo 1; fi\n');
     writeFileSync(path.join(bin, 'mariadb-dump'), '#!/usr/bin/env bash\nprintf "CREATE TABLE \\`example\\` (id int);\\nINSERT INTO \\`example\\` VALUES (1);\\n"\n');
     writeFileSync(path.join(bin, 'df'), '#!/usr/bin/env bash\nprintf "Avail\\n10000000000\\n"\n');
     writeFileSync(path.join(bin, 'openssl'), '#!/usr/bin/env bash\nprintf "%064d\\n" 0\n');
@@ -99,10 +99,24 @@ test('backup prepare creates a nonempty dump and refuses an empty dump', () => {
     assert.ok(readFileSync(path.join(backupDir, name)).length > 0);
     assert.ok(readFileSync(path.join(backupDir, `${name}.sha256`)).length > 0);
     assert.ok(readFileSync(path.join(backupDir, `${name}.manifest`)).length > 0);
+    assert.match(readFileSync(path.join(backupDir, name), 'utf8'), /-- appglv-source-tables=1/);
     writeFileSync(path.join(bin, 'mariadb-dump'), '#!/usr/bin/env bash\nexit 0\n');
     const empty = run('d'.repeat(40));
     assert.notEqual(empty.status, 0);
     assert.match(empty.stderr, /Empty database dump/);
+    writeFileSync(path.join(bin, 'mariadb'), '#!/usr/bin/env bash\necho 0\n');
+    writeFileSync(path.join(bin, 'mariadb-dump'), '#!/usr/bin/env bash\nprintf "%s\\n" "-- MariaDB dump of empty ducmy_production" "CREATE DATABASE IF NOT EXISTS ducmy_production;"\n');
+    const firstDeploy = run('e'.repeat(40));
+    assert.equal(firstDeploy.status, 0, firstDeploy.stderr);
+    const firstDump = readFileSync(path.join(backupDir, firstDeploy.stdout.trim()), 'utf8');
+    assert.ok(firstDump.length > 0);
+    assert.doesNotMatch(firstDump, /CREATE TABLE/);
+    assert.match(firstDump, /-- appglv-source-tables=0/);
+    writeFileSync(path.join(bin, 'mariadb'), '#!/usr/bin/env bash\nif [[ "$*" == *"engine <>"* ]]; then echo 0; elif [[ "$*" == *"SUM(data_length"* ]]; then echo 100; else echo 2; fi\n');
+    writeFileSync(path.join(bin, 'mariadb-dump'), '#!/usr/bin/env bash\nprintf "CREATE TABLE \\`example\\` (id int);\\n"\n');
+    const mismatched = run('f'.repeat(40));
+    assert.notEqual(mismatched.status, 0);
+    assert.match(mismatched.stderr, /SQL dump table count differs/);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

@@ -17,8 +17,11 @@ mkdir -p "$DIR"
 # --single-transaction is consistent only for transactional tables.
 NON_TRANSACTIONAL=$(mariadb --defaults-extra-file="$CNF" --batch --skip-column-names -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='ducmy_production' AND table_type='BASE TABLE' AND engine <> 'InnoDB'")
 [[ "$NON_TRANSACTIONAL" == 0 ]] || { echo 'Non-InnoDB tables prevent a consistent online dump.' >&2; exit 1; }
+TABLE_COUNT=$(mariadb --defaults-extra-file="$CNF" --batch --skip-column-names -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='ducmy_production' AND table_type='BASE TABLE'")
+[[ "$TABLE_COUNT" =~ ^[0-9]+$ ]] || { echo 'Cannot count production tables.' >&2; exit 1; }
 ESTIMATE=$(mariadb --defaults-extra-file="$CNF" --batch --skip-column-names -e "SELECT COALESCE(SUM(data_length+index_length),0) FROM information_schema.tables WHERE table_schema='ducmy_production'")
-[[ "$ESTIMATE" =~ ^[0-9]+$ && "$ESTIMATE" -gt 0 ]] || { echo 'Cannot estimate production database size.' >&2; exit 1; }
+[[ "$ESTIMATE" =~ ^[0-9]+$ ]] || { echo 'Cannot estimate production database size.' >&2; exit 1; }
+[[ "$TABLE_COUNT" -eq 0 || "$ESTIMATE" -gt 0 ]] || { echo 'Cannot estimate nonempty production database size.' >&2; exit 1; }
 FREE=$(df -B1 --output=avail "$DIR" | tail -n 1 | tr -d ' ')
 [[ "$FREE" =~ ^[0-9]+$ && "$FREE" -gt $((ESTIMATE * 2 + 1073741824)) ]] || { echo 'Insufficient free space for a bounded SQL dump.' >&2; exit 1; }
 
@@ -30,6 +33,11 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 mariadb-dump --defaults-extra-file="$CNF" --single-transaction --quick --routines --triggers --events ducmy_production > "$FILE"
 [[ -s "$FILE" ]] || { echo 'Empty database dump.' >&2; exit 1; }
+TABLE_COUNT_AFTER=$(mariadb --defaults-extra-file="$CNF" --batch --skip-column-names -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='ducmy_production' AND table_type='BASE TABLE'")
+[[ "$TABLE_COUNT_AFTER" == "$TABLE_COUNT" ]] || { echo 'Production table count changed during dump.' >&2; exit 1; }
+DUMP_TABLE_COUNT=$(grep -c '^CREATE TABLE ' "$FILE" || true)
+[[ "$DUMP_TABLE_COUNT" == "$TABLE_COUNT" ]] || { echo 'SQL dump table count differs from production source.' >&2; exit 1; }
+printf '\n-- appglv-source-tables=%s\n' "$TABLE_COUNT" >> "$FILE"
 cd "$DIR"
 sha256sum "$(basename "$FILE")" > "$FILE.sha256"
 HASH=$(sha256sum "$FILE" | cut -d ' ' -f 1)
