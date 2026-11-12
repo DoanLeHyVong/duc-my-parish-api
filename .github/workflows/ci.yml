@@ -44,6 +44,7 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: node --test deploy/manual/tests/check.mjs
+      - run: python3 -B -m unittest discover -s deploy/manual/tests -p 'test_*.py'
       - run: npm test
         env:
           NODE_ENV: test
@@ -69,3 +70,11 @@ jobs:
             ducmy-api-${{ github.sha }}.tar.gz.sha256
           if-no-files-found: error
           retention-days: 14
+
+  windows-backup-contract:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Windows backup transfer contract
+        shell: pwsh
+        run: ./deploy/manual/windows/Test-Download-DbBackup.ps1

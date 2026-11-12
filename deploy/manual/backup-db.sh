@@ -1,16 +1,44 @@
 #!/usr/bin/env bash
 set -euo pipefail
 umask 077
-source /etc/ducmy/restic.env
-[[ "${RESTIC_REPOSITORY:-}" =~ ^(s3:|sftp:|rest:https://|b2:|azure:|gs:|swift:|rclone:) ]] || { echo 'An off-VPS restic repository is required.' >&2; exit 1; }
+
+SHA=${1:?Usage: backup-db.sh RELEASE_SHA}
+[[ "$SHA" =~ ^[0-9a-f]{40}$ ]] || { echo 'Invalid release SHA.' >&2; exit 1; }
 DIR=/var/backups/ducmy
+CNF=/etc/ducmy/mariadb-backup.cnf
+[[ -r "$CNF" ]] || { echo 'MariaDB backup credentials missing.' >&2; exit 1; }
+command -v mariadb-dump >/dev/null
+command -v mariadb >/dev/null
+command -v sha256sum >/dev/null
+command -v openssl >/dev/null
 mkdir -p "$DIR"
-FILE="$DIR/ducmy-$(date -u +%Y%m%dT%H%M%SZ).sql"
-trap 'rm -f "$FILE" "$FILE.sha256"' ERR
-mariadb-dump --defaults-extra-file=/etc/ducmy/mariadb-backup.cnf --single-transaction --routines --triggers --events ducmy_production > "$FILE"
-test -s "$FILE"
-sha256sum "$FILE" > "$FILE.sha256"
-restic backup "$FILE" "$FILE.sha256" --tag ducmy --tag scheduled >/dev/null
-find "$DIR" -maxdepth 1 -type f -name 'ducmy-*.sql' -mmin +2880 -delete
-find "$DIR" -maxdepth 1 -type f -name 'ducmy-*.sql.sha256' -mmin +2880 -delete
-echo 'Off-VPS database backup completed.'
+[[ ! -L "$DIR" && $(stat -c %a "$DIR") == 700 ]] || { echo 'Backup directory must be private and not a symlink.' >&2; exit 1; }
+
+# --single-transaction is consistent only for transactional tables.
+NON_TRANSACTIONAL=$(mariadb --defaults-extra-file="$CNF" --batch --skip-column-names -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='ducmy_production' AND table_type='BASE TABLE' AND engine <> 'InnoDB'")
+[[ "$NON_TRANSACTIONAL" == 0 ]] || { echo 'Non-InnoDB tables prevent a consistent online dump.' >&2; exit 1; }
+ESTIMATE=$(mariadb --defaults-extra-file="$CNF" --batch --skip-column-names -e "SELECT COALESCE(SUM(data_length+index_length),0) FROM information_schema.tables WHERE table_schema='ducmy_production'")
+[[ "$ESTIMATE" =~ ^[0-9]+$ && "$ESTIMATE" -gt 0 ]] || { echo 'Cannot estimate production database size.' >&2; exit 1; }
+FREE=$(df -B1 --output=avail "$DIR" | tail -n 1 | tr -d ' ')
+[[ "$FREE" =~ ^[0-9]+$ && "$FREE" -gt $((ESTIMATE * 2 + 1073741824)) ]] || { echo 'Insufficient free space for a bounded SQL dump.' >&2; exit 1; }
+
+FILE="$DIR/ducmy-${SHA}-$(date -u +%Y%m%dT%H%M%SZ).sql"
+[[ ! -e "$FILE" ]] || { echo 'Backup file already exists.' >&2; exit 1; }
+cleanup() { rm -f -- "$FILE" "$FILE.sha256" "$FILE.manifest"; }
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+mariadb-dump --defaults-extra-file="$CNF" --single-transaction --quick --routines --triggers --events ducmy_production > "$FILE"
+[[ -s "$FILE" ]] || { echo 'Empty database dump.' >&2; exit 1; }
+cd "$DIR"
+sha256sum "$(basename "$FILE")" > "$FILE.sha256"
+HASH=$(sha256sum "$FILE" | cut -d ' ' -f 1)
+CHALLENGE=$(openssl rand -hex 32)
+{
+  printf 'release_sha=%s\n' "$SHA"
+  printf 'backup_sha256=%s\n' "$HASH"
+  printf 'challenge=%s\n' "$CHALLENGE"
+  printf 'created_unix=%s\n' "$(date -u +%s)"
+} > "$FILE.manifest"
+trap - EXIT INT TERM
+printf '%s\n' "$(basename "$FILE")"

@@ -14,4 +14,4 @@ if ($actual -ne $expected) { throw 'SHA-256 mismatch.' }
 if ($LASTEXITCODE -ne 0) { throw 'Archive transfer failed.' }
 & scp -o StrictHostKeyChecking=yes $Checksum "deploy@${HostName}:/opt/ducmy/api/incoming/"
 if ($LASTEXITCODE -ne 0) { throw 'Checksum transfer failed.' }
-Write-Output 'Transfer complete. Run api-release.sh explicitly on VPS after operator preflight.'
+Write-Output 'Transfer complete. Run api-release.sh --prepare explicitly, verify the SQL copy on Windows, perform the disposable restore check, then run --release.'
