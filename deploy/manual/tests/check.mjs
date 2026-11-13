@@ -20,6 +20,16 @@ test('CI cannot start automatic deployment or publish an image', () => {
   assert.match(workflow, /if: github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'/);
 });
 
+test('production workflow prepares only and leaves migration behind evidence gate', () => {
+  const workflow = readFileSync(path.join(root, '.github/workflows/deploy-production.yml'), 'utf8');
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.match(workflow, /contents: read/);
+  assert.match(workflow, /StrictHostKeyChecking=yes/);
+  assert.match(workflow, /api-release\.sh --prepare/);
+  assert.doesNotMatch(workflow, /api-release\.sh --release|prisma migrate deploy.*ducmy_production|systemctl restart ducmy-api/);
+  assert.ok(workflow.indexOf('Missing $variable') < workflow.indexOf('scp "${ssh_opts'));
+});
+
 test('release has two phases and no Prisma migration before evidence checks', () => {
   const release = source('api-release.sh');
   const backup = source('backup-db.sh');

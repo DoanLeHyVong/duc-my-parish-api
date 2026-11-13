@@ -1,0 +1,100 @@
+name: Parish API production preparation
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: parish-api-production
+  cancel-in-progress: false
+
+jobs:
+  verify-and-prepare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: ci-root-password
+          MARIADB_DATABASE: appglv_unified_test
+          MARIADB_USER: ci
+          MARIADB_PASSWORD: ci-password
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=12
+    env:
+      NODE_ENV: test
+      DATABASE_URL: mysql://ci:ci-password@127.0.0.1:3306/appglv_unified_test
+      JWT_ACCESS_SECRET: ci-access-secret-please-use-only-in-ci
+      JWT_REFRESH_SECRET: ci-refresh-secret-please-use-only-in-ci
+      CLIENT_URL: http://localhost:5173
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx prisma validate
+      - run: npm run prisma:generate
+      - run: npm run prisma:migrate:deploy
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test
+      - run: node --test deploy/manual/tests/check.mjs
+      - run: python3 -B -m unittest discover -s deploy/manual/tests -p 'test_*.py'
+      - run: npm audit --omit=dev --audit-level=high
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Package and verify Linux release
+        run: |
+          set -euo pipefail
+          test -s dist/server.js
+          test -d prisma/migrations
+          test -x node_modules/.bin/prisma
+          tar -czf "ducmy-api-${GITHUB_SHA}.tar.gz" dist prisma prisma.config.ts package.json package-lock.json node_modules
+          sha256sum "ducmy-api-${GITHUB_SHA}.tar.gz" > "ducmy-api-${GITHUB_SHA}.tar.gz.sha256"
+          python3 deploy/manual/validate-archive.py "ducmy-api-${GITHUB_SHA}.tar.gz" "$(mktemp -d)"
+      - name: Check SSH configuration before network use
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          for variable in VPS_HOST VPS_USER VPS_SSH_KEY VPS_KNOWN_HOSTS; do
+            test -n "${!variable}" || { echo "Missing $variable" >&2; exit 1; }
+          done
+          [[ "$VPS_USER" == deploy && "$VPS_HOST" =~ ^[A-Za-z0-9.-]+$ ]] || { echo 'Invalid VPS target.' >&2; exit 1; }
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$VPS_SSH_KEY" > "$HOME/.ssh/id_deploy"
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_deploy" "$HOME/.ssh/known_hosts"
+      - name: Upload API artifact and prepare backup-gated release
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          set -euo pipefail
+          ssh_opts=(-i "$HOME/.ssh/id_deploy" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts")
+          target="${VPS_USER}@${VPS_HOST}"
+          # Never run an older backup or migration guard than the one CI verified.
+          gate_scripts=(api-release.sh backup-db.sh restore-check.sh verify-backup-evidence.sh verify-restore.py verify-release-tree.py validate-archive.py)
+          local_hashes=$(cd deploy/manual && sha256sum "${gate_scripts[@]}")
+          remote_hashes=$(ssh "${ssh_opts[@]}" "$target" 'cd /opt/ducmy/api/manual && sha256sum api-release.sh backup-db.sh restore-check.sh verify-backup-evidence.sh verify-restore.py verify-release-tree.py validate-archive.py')
+          [[ "$local_hashes" == "$remote_hashes" ]] || { echo 'VPS API safety scripts differ; operator must install reviewed manual scripts first.' >&2; exit 1; }
+          ssh "${ssh_opts[@]}" "$target" "mkdir -p /opt/ducmy/api/incoming/${GITHUB_SHA}"
+          scp "${ssh_opts[@]}" "ducmy-api-${GITHUB_SHA}.tar.gz" "ducmy-api-${GITHUB_SHA}.tar.gz.sha256" "$target:/opt/ducmy/api/incoming/${GITHUB_SHA}/"
+          ssh "${ssh_opts[@]}" "$target" "bash /opt/ducmy/api/manual/api-release.sh --prepare /opt/ducmy/api/incoming/${GITHUB_SHA}/ducmy-api-${GITHUB_SHA}.tar.gz /opt/ducmy/api/incoming/${GITHUB_SHA}/ducmy-api-${GITHUB_SHA}.tar.gz.sha256"
+          echo 'API PREPARED ONLY. Migration and restart are blocked until off-VPS copy receipt and disposable restore proof pass.'
