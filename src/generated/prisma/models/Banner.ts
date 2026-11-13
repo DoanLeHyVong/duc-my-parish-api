@@ -43,6 +43,9 @@ export type BannerMinAggregateOutputType = {
   imageUrl: string | null
   primaryText: string | null
   primaryUrl: string | null
+  secondaryText: string | null
+  secondaryUrl: string | null
+  mobileImageUrl: string | null
   sortOrder: number | null
   isActive: boolean | null
   startsAt: Date | null
@@ -58,6 +61,9 @@ export type BannerMaxAggregateOutputType = {
   imageUrl: string | null
   primaryText: string | null
   primaryUrl: string | null
+  secondaryText: string | null
+  secondaryUrl: string | null
+  mobileImageUrl: string | null
   sortOrder: number | null
   isActive: boolean | null
   startsAt: Date | null
@@ -73,6 +79,9 @@ export type BannerCountAggregateOutputType = {
   imageUrl: number
   primaryText: number
   primaryUrl: number
+  secondaryText: number
+  secondaryUrl: number
+  mobileImageUrl: number
   sortOrder: number
   isActive: number
   startsAt: number
@@ -100,6 +109,9 @@ export type BannerMinAggregateInputType = {
   imageUrl?: true
   primaryText?: true
   primaryUrl?: true
+  secondaryText?: true
+  secondaryUrl?: true
+  mobileImageUrl?: true
   sortOrder?: true
   isActive?: true
   startsAt?: true
@@ -115,6 +127,9 @@ export type BannerMaxAggregateInputType = {
   imageUrl?: true
   primaryText?: true
   primaryUrl?: true
+  secondaryText?: true
+  secondaryUrl?: true
+  mobileImageUrl?: true
   sortOrder?: true
   isActive?: true
   startsAt?: true
@@ -130,6 +145,9 @@ export type BannerCountAggregateInputType = {
   imageUrl?: true
   primaryText?: true
   primaryUrl?: true
+  secondaryText?: true
+  secondaryUrl?: true
+  mobileImageUrl?: true
   sortOrder?: true
   isActive?: true
   startsAt?: true
@@ -232,6 +250,9 @@ export type BannerGroupByOutputType = {
   imageUrl: string
   primaryText: string | null
   primaryUrl: string | null
+  secondaryText: string | null
+  secondaryUrl: string | null
+  mobileImageUrl: string | null
   sortOrder: number
   isActive: boolean
   startsAt: Date | null
@@ -270,6 +291,9 @@ export type BannerWhereInput = {
   imageUrl?: Prisma.StringFilter<"Banner"> | string
   primaryText?: Prisma.StringNullableFilter<"Banner"> | string | null
   primaryUrl?: Prisma.StringNullableFilter<"Banner"> | string | null
+  secondaryText?: Prisma.StringNullableFilter<"Banner"> | string | null
+  secondaryUrl?: Prisma.StringNullableFilter<"Banner"> | string | null
+  mobileImageUrl?: Prisma.StringNullableFilter<"Banner"> | string | null
   sortOrder?: Prisma.IntFilter<"Banner"> | number
   isActive?: Prisma.BoolFilter<"Banner"> | boolean
   startsAt?: Prisma.DateTimeNullableFilter<"Banner"> | Date | string | null
@@ -285,6 +309,9 @@ export type BannerOrderByWithRelationInput = {
   imageUrl?: Prisma.SortOrder
   primaryText?: Prisma.SortOrderInput | Prisma.SortOrder
   primaryUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  secondaryText?: Prisma.SortOrderInput | Prisma.SortOrder
+  secondaryUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  mobileImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   startsAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -304,6 +331,9 @@ export type BannerWhereUniqueInput = Prisma.AtLeast<{
   imageUrl?: Prisma.StringFilter<"Banner"> | string
   primaryText?: Prisma.StringNullableFilter<"Banner"> | string | null
   primaryUrl?: Prisma.StringNullableFilter<"Banner"> | string | null
+  secondaryText?: Prisma.StringNullableFilter<"Banner"> | string | null
+  secondaryUrl?: Prisma.StringNullableFilter<"Banner"> | string | null
+  mobileImageUrl?: Prisma.StringNullableFilter<"Banner"> | string | null
   sortOrder?: Prisma.IntFilter<"Banner"> | number
   isActive?: Prisma.BoolFilter<"Banner"> | boolean
   startsAt?: Prisma.DateTimeNullableFilter<"Banner"> | Date | string | null
@@ -319,6 +349,9 @@ export type BannerOrderByWithAggregationInput = {
   imageUrl?: Prisma.SortOrder
   primaryText?: Prisma.SortOrderInput | Prisma.SortOrder
   primaryUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  secondaryText?: Prisma.SortOrderInput | Prisma.SortOrder
+  secondaryUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  mobileImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   startsAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -342,6 +375,9 @@ export type BannerScalarWhereWithAggregatesInput = {
   imageUrl?: Prisma.StringWithAggregatesFilter<"Banner"> | string
   primaryText?: Prisma.StringNullableWithAggregatesFilter<"Banner"> | string | null
   primaryUrl?: Prisma.StringNullableWithAggregatesFilter<"Banner"> | string | null
+  secondaryText?: Prisma.StringNullableWithAggregatesFilter<"Banner"> | string | null
+  secondaryUrl?: Prisma.StringNullableWithAggregatesFilter<"Banner"> | string | null
+  mobileImageUrl?: Prisma.StringNullableWithAggregatesFilter<"Banner"> | string | null
   sortOrder?: Prisma.IntWithAggregatesFilter<"Banner"> | number
   isActive?: Prisma.BoolWithAggregatesFilter<"Banner"> | boolean
   startsAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Banner"> | Date | string | null
@@ -356,6 +392,9 @@ export type BannerCreateInput = {
   imageUrl: string
   primaryText?: string | null
   primaryUrl?: string | null
+  secondaryText?: string | null
+  secondaryUrl?: string | null
+  mobileImageUrl?: string | null
   sortOrder?: number
   isActive?: boolean
   startsAt?: Date | string | null
@@ -371,6 +410,9 @@ export type BannerUncheckedCreateInput = {
   imageUrl: string
   primaryText?: string | null
   primaryUrl?: string | null
+  secondaryText?: string | null
+  secondaryUrl?: string | null
+  mobileImageUrl?: string | null
   sortOrder?: number
   isActive?: boolean
   startsAt?: Date | string | null
@@ -385,6 +427,9 @@ export type BannerUpdateInput = {
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   primaryText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   primaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secondaryText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secondaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mobileImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -400,6 +445,9 @@ export type BannerUncheckedUpdateInput = {
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   primaryText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   primaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secondaryText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secondaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mobileImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -415,6 +463,9 @@ export type BannerCreateManyInput = {
   imageUrl: string
   primaryText?: string | null
   primaryUrl?: string | null
+  secondaryText?: string | null
+  secondaryUrl?: string | null
+  mobileImageUrl?: string | null
   sortOrder?: number
   isActive?: boolean
   startsAt?: Date | string | null
@@ -429,6 +480,9 @@ export type BannerUpdateManyMutationInput = {
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   primaryText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   primaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secondaryText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secondaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mobileImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -444,6 +498,9 @@ export type BannerUncheckedUpdateManyInput = {
   imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   primaryText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   primaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secondaryText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secondaryUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mobileImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -465,6 +522,9 @@ export type BannerCountOrderByAggregateInput = {
   imageUrl?: Prisma.SortOrder
   primaryText?: Prisma.SortOrder
   primaryUrl?: Prisma.SortOrder
+  secondaryText?: Prisma.SortOrder
+  secondaryUrl?: Prisma.SortOrder
+  mobileImageUrl?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   startsAt?: Prisma.SortOrder
@@ -485,6 +545,9 @@ export type BannerMaxOrderByAggregateInput = {
   imageUrl?: Prisma.SortOrder
   primaryText?: Prisma.SortOrder
   primaryUrl?: Prisma.SortOrder
+  secondaryText?: Prisma.SortOrder
+  secondaryUrl?: Prisma.SortOrder
+  mobileImageUrl?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   startsAt?: Prisma.SortOrder
@@ -500,6 +563,9 @@ export type BannerMinOrderByAggregateInput = {
   imageUrl?: Prisma.SortOrder
   primaryText?: Prisma.SortOrder
   primaryUrl?: Prisma.SortOrder
+  secondaryText?: Prisma.SortOrder
+  secondaryUrl?: Prisma.SortOrder
+  mobileImageUrl?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   startsAt?: Prisma.SortOrder
@@ -522,6 +588,9 @@ export type BannerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   imageUrl?: boolean
   primaryText?: boolean
   primaryUrl?: boolean
+  secondaryText?: boolean
+  secondaryUrl?: boolean
+  mobileImageUrl?: boolean
   sortOrder?: boolean
   isActive?: boolean
   startsAt?: boolean
@@ -539,6 +608,9 @@ export type BannerSelectScalar = {
   imageUrl?: boolean
   primaryText?: boolean
   primaryUrl?: boolean
+  secondaryText?: boolean
+  secondaryUrl?: boolean
+  mobileImageUrl?: boolean
   sortOrder?: boolean
   isActive?: boolean
   startsAt?: boolean
@@ -547,7 +619,7 @@ export type BannerSelectScalar = {
   updatedAt?: boolean
 }
 
-export type BannerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "subtitle" | "imageUrl" | "primaryText" | "primaryUrl" | "sortOrder" | "isActive" | "startsAt" | "endsAt" | "createdAt" | "updatedAt", ExtArgs["result"]["banner"]>
+export type BannerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "subtitle" | "imageUrl" | "primaryText" | "primaryUrl" | "secondaryText" | "secondaryUrl" | "mobileImageUrl" | "sortOrder" | "isActive" | "startsAt" | "endsAt" | "createdAt" | "updatedAt", ExtArgs["result"]["banner"]>
 
 export type $BannerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Banner"
@@ -559,6 +631,9 @@ export type $BannerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     imageUrl: string
     primaryText: string | null
     primaryUrl: string | null
+    secondaryText: string | null
+    secondaryUrl: string | null
+    mobileImageUrl: string | null
     sortOrder: number
     isActive: boolean
     startsAt: Date | null
@@ -940,6 +1015,9 @@ export interface BannerFieldRefs {
   readonly imageUrl: Prisma.FieldRef<"Banner", 'String'>
   readonly primaryText: Prisma.FieldRef<"Banner", 'String'>
   readonly primaryUrl: Prisma.FieldRef<"Banner", 'String'>
+  readonly secondaryText: Prisma.FieldRef<"Banner", 'String'>
+  readonly secondaryUrl: Prisma.FieldRef<"Banner", 'String'>
+  readonly mobileImageUrl: Prisma.FieldRef<"Banner", 'String'>
   readonly sortOrder: Prisma.FieldRef<"Banner", 'Int'>
   readonly isActive: Prisma.FieldRef<"Banner", 'Boolean'>
   readonly startsAt: Prisma.FieldRef<"Banner", 'DateTime'>

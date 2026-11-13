@@ -10,12 +10,16 @@ const postInclude = {
 export const publicService = {
   async home() {
     const now = new Date();
-    const [profile, banners, menu, sections, posts, announcements, massSchedules, events, albums] =
+    const [profile, banners, menu, footerMenu, sections, posts, announcements, massSchedules, events, albums] =
       await prisma.$transaction([
         prisma.parishProfile.findFirst(),
-        prisma.banner.findMany({ where: { isActive: true }, orderBy: { sortOrder: 'asc' } }),
+        prisma.banner.findMany({ where: { isActive: true, OR: [{ startsAt: null }, { startsAt: { lte: now } }], AND: [{ OR: [{ endsAt: null }, { endsAt: { gte: now } }] }] }, orderBy: { sortOrder: 'asc' } }),
         prisma.menu.findFirst({
           where: { location: 'HEADER', isActive: true },
+          include: { items: { where: { isVisible: true }, orderBy: { sortOrder: 'asc' } } },
+        }),
+        prisma.menu.findFirst({
+          where: { location: 'FOOTER', isActive: true },
           include: { items: { where: { isVisible: true }, orderBy: { sortOrder: 'asc' } } },
         }),
         prisma.homeSection.findMany({
@@ -38,7 +42,7 @@ export const publicService = {
         prisma.event.findMany({ where: { isActive: true, startsAt: { gte: now } }, orderBy: { startsAt: 'asc' }, take: 8 }),
         prisma.album.findMany({ where: { isPublished: true }, orderBy: { eventDate: 'desc' }, take: 8 }),
       ]);
-    return { profile, banners, menu, sections, posts, announcements, massSchedules, events, albums };
+    return { profile, banners, menu, footerMenu, sections, posts, announcements, massSchedules, events, albums };
   },
   menu: () =>
     prisma.menu.findFirst({
@@ -52,6 +56,7 @@ export const publicService = {
     const where = {
       status: 'PUBLISHED' as const,
       deletedAt: null,
+      publishedAt: { lte: new Date() },
       ...(search ? { OR: [{ title: { contains: search } }, { excerpt: { contains: search } }] } : {}),
     };
     const [data, total] = await prisma.$transaction([
@@ -61,16 +66,16 @@ export const publicService = {
     return { data, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } };
   },
   async post(slug: string) {
-    const post = await prisma.post.findFirst({ where: { slug, status: 'PUBLISHED', deletedAt: null }, include: postInclude });
+    const post = await prisma.post.findFirst({ where: { slug, status: 'PUBLISHED', publishedAt: { lte: new Date() }, deletedAt: null }, include: postInclude });
     if (!post) throw new ApiError(404, 'Không tìm thấy bài viết');
     await prisma.post.update({ where: { id: post.id }, data: { viewCount: { increment: 1 } } });
     return post;
   },
   async categoryPosts(slug: string) {
-    const category = await prisma.category.findUnique({ where: { slug } });
+    const category = await prisma.category.findFirst({ where: { slug, isActive: true } });
     if (!category) throw new ApiError(404, 'Không tìm thấy chuyên mục');
     const posts = await prisma.post.findMany({
-      where: { status: 'PUBLISHED', deletedAt: null, categories: { some: { categoryId: category.id } } },
+      where: { status: 'PUBLISHED', publishedAt: { lte: new Date() }, deletedAt: null, categories: { some: { categoryId: category.id } } },
       include: postInclude,
       orderBy: { publishedAt: 'desc' },
     });

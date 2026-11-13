@@ -4104,6 +4104,8 @@ export const CategoryScalarFieldEnum = {
   name: 'name',
   slug: 'slug',
   description: 'description',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
   imageId: 'imageId',
   sortOrder: 'sortOrder',
   isActive: 'isActive',
@@ -4210,6 +4212,9 @@ export const BannerScalarFieldEnum = {
   imageUrl: 'imageUrl',
   primaryText: 'primaryText',
   primaryUrl: 'primaryUrl',
+  secondaryText: 'secondaryText',
+  secondaryUrl: 'secondaryUrl',
+  mobileImageUrl: 'mobileImageUrl',
   sortOrder: 'sortOrder',
   isActive: 'isActive',
   startsAt: 'startsAt',
@@ -4288,6 +4293,8 @@ export const EventScalarFieldEnum = {
   title: 'title',
   slug: 'slug',
   description: 'description',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
   startsAt: 'startsAt',
   endsAt: 'endsAt',
   location: 'location',
@@ -4306,6 +4313,8 @@ export const AlbumScalarFieldEnum = {
   title: 'title',
   slug: 'slug',
   description: 'description',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
   coverUrl: 'coverUrl',
   eventDate: 'eventDate',
   isPublished: 'isPublished',
@@ -4336,7 +4345,15 @@ export const ParishProfileScalarFieldEnum = {
   email: 'email',
   mapEmbedUrl: 'mapEmbedUrl',
   logoUrl: 'logoUrl',
+  faviconUrl: 'faviconUrl',
   heroUrl: 'heroUrl',
+  tagline: 'tagline',
+  footerText: 'footerText',
+  copyrightText: 'copyrightText',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
+  ogImageUrl: 'ogImageUrl',
+  pageSeo: 'pageSeo',
   facebookUrl: 'facebookUrl',
   youtubeUrl: 'youtubeUrl',
   createdAt: 'createdAt',
@@ -4928,7 +4945,9 @@ export type PostOrderByRelevanceFieldEnum = (typeof PostOrderByRelevanceFieldEnu
 export const CategoryOrderByRelevanceFieldEnum = {
   name: 'name',
   slug: 'slug',
-  description: 'description'
+  description: 'description',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription'
 } as const
 
 export type CategoryOrderByRelevanceFieldEnum = (typeof CategoryOrderByRelevanceFieldEnum)[keyof typeof CategoryOrderByRelevanceFieldEnum]
@@ -4980,7 +4999,10 @@ export const BannerOrderByRelevanceFieldEnum = {
   subtitle: 'subtitle',
   imageUrl: 'imageUrl',
   primaryText: 'primaryText',
-  primaryUrl: 'primaryUrl'
+  primaryUrl: 'primaryUrl',
+  secondaryText: 'secondaryText',
+  secondaryUrl: 'secondaryUrl',
+  mobileImageUrl: 'mobileImageUrl'
 } as const
 
 export type BannerOrderByRelevanceFieldEnum = (typeof BannerOrderByRelevanceFieldEnum)[keyof typeof BannerOrderByRelevanceFieldEnum]
@@ -5043,6 +5065,8 @@ export const EventOrderByRelevanceFieldEnum = {
   title: 'title',
   slug: 'slug',
   description: 'description',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
   location: 'location',
   imageUrl: 'imageUrl'
 } as const
@@ -5054,6 +5078,8 @@ export const AlbumOrderByRelevanceFieldEnum = {
   title: 'title',
   slug: 'slug',
   description: 'description',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
   coverUrl: 'coverUrl'
 } as const
 
@@ -5070,7 +5096,14 @@ export const ParishProfileOrderByRelevanceFieldEnum = {
   email: 'email',
   mapEmbedUrl: 'mapEmbedUrl',
   logoUrl: 'logoUrl',
+  faviconUrl: 'faviconUrl',
   heroUrl: 'heroUrl',
+  tagline: 'tagline',
+  footerText: 'footerText',
+  copyrightText: 'copyrightText',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
+  ogImageUrl: 'ogImageUrl',
   facebookUrl: 'facebookUrl',
   youtubeUrl: 'youtubeUrl'
 } as const

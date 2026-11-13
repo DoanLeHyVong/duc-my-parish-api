@@ -39,6 +39,8 @@ export type AlbumMinAggregateOutputType = {
   title: string | null
   slug: string | null
   description: string | null
+  seoTitle: string | null
+  seoDescription: string | null
   coverUrl: string | null
   eventDate: Date | null
   isPublished: boolean | null
@@ -51,6 +53,8 @@ export type AlbumMaxAggregateOutputType = {
   title: string | null
   slug: string | null
   description: string | null
+  seoTitle: string | null
+  seoDescription: string | null
   coverUrl: string | null
   eventDate: Date | null
   isPublished: boolean | null
@@ -63,6 +67,8 @@ export type AlbumCountAggregateOutputType = {
   title: number
   slug: number
   description: number
+  seoTitle: number
+  seoDescription: number
   coverUrl: number
   eventDate: number
   isPublished: number
@@ -85,6 +91,8 @@ export type AlbumMinAggregateInputType = {
   title?: true
   slug?: true
   description?: true
+  seoTitle?: true
+  seoDescription?: true
   coverUrl?: true
   eventDate?: true
   isPublished?: true
@@ -97,6 +105,8 @@ export type AlbumMaxAggregateInputType = {
   title?: true
   slug?: true
   description?: true
+  seoTitle?: true
+  seoDescription?: true
   coverUrl?: true
   eventDate?: true
   isPublished?: true
@@ -109,6 +119,8 @@ export type AlbumCountAggregateInputType = {
   title?: true
   slug?: true
   description?: true
+  seoTitle?: true
+  seoDescription?: true
   coverUrl?: true
   eventDate?: true
   isPublished?: true
@@ -208,6 +220,8 @@ export type AlbumGroupByOutputType = {
   title: string
   slug: string
   description: string | null
+  seoTitle: string | null
+  seoDescription: string | null
   coverUrl: string | null
   eventDate: Date | null
   isPublished: boolean
@@ -243,6 +257,8 @@ export type AlbumWhereInput = {
   title?: Prisma.StringFilter<"Album"> | string
   slug?: Prisma.StringFilter<"Album"> | string
   description?: Prisma.StringNullableFilter<"Album"> | string | null
+  seoTitle?: Prisma.StringNullableFilter<"Album"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Album"> | string | null
   coverUrl?: Prisma.StringNullableFilter<"Album"> | string | null
   eventDate?: Prisma.DateTimeNullableFilter<"Album"> | Date | string | null
   isPublished?: Prisma.BoolFilter<"Album"> | boolean
@@ -256,6 +272,8 @@ export type AlbumOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   coverUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   eventDate?: Prisma.SortOrderInput | Prisma.SortOrder
   isPublished?: Prisma.SortOrder
@@ -273,6 +291,8 @@ export type AlbumWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.AlbumWhereInput | Prisma.AlbumWhereInput[]
   title?: Prisma.StringFilter<"Album"> | string
   description?: Prisma.StringNullableFilter<"Album"> | string | null
+  seoTitle?: Prisma.StringNullableFilter<"Album"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Album"> | string | null
   coverUrl?: Prisma.StringNullableFilter<"Album"> | string | null
   eventDate?: Prisma.DateTimeNullableFilter<"Album"> | Date | string | null
   isPublished?: Prisma.BoolFilter<"Album"> | boolean
@@ -286,6 +306,8 @@ export type AlbumOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   coverUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   eventDate?: Prisma.SortOrderInput | Prisma.SortOrder
   isPublished?: Prisma.SortOrder
@@ -306,6 +328,8 @@ export type AlbumScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"Album"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Album"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Album"> | string | null
+  seoTitle?: Prisma.StringNullableWithAggregatesFilter<"Album"> | string | null
+  seoDescription?: Prisma.StringNullableWithAggregatesFilter<"Album"> | string | null
   coverUrl?: Prisma.StringNullableWithAggregatesFilter<"Album"> | string | null
   eventDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Album"> | Date | string | null
   isPublished?: Prisma.BoolWithAggregatesFilter<"Album"> | boolean
@@ -317,6 +341,8 @@ export type AlbumCreateInput = {
   title: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   coverUrl?: string | null
   eventDate?: Date | string | null
   isPublished?: boolean
@@ -330,6 +356,8 @@ export type AlbumUncheckedCreateInput = {
   title: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   coverUrl?: string | null
   eventDate?: Date | string | null
   isPublished?: boolean
@@ -342,6 +370,8 @@ export type AlbumUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -355,6 +385,8 @@ export type AlbumUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -368,6 +400,8 @@ export type AlbumCreateManyInput = {
   title: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   coverUrl?: string | null
   eventDate?: Date | string | null
   isPublished?: boolean
@@ -379,6 +413,8 @@ export type AlbumUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -391,6 +427,8 @@ export type AlbumUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -409,6 +447,8 @@ export type AlbumCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
   coverUrl?: Prisma.SortOrder
   eventDate?: Prisma.SortOrder
   isPublished?: Prisma.SortOrder
@@ -425,6 +465,8 @@ export type AlbumMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
   coverUrl?: Prisma.SortOrder
   eventDate?: Prisma.SortOrder
   isPublished?: Prisma.SortOrder
@@ -437,6 +479,8 @@ export type AlbumMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
   coverUrl?: Prisma.SortOrder
   eventDate?: Prisma.SortOrder
   isPublished?: Prisma.SortOrder
@@ -471,6 +515,8 @@ export type AlbumCreateWithoutMediaInput = {
   title: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   coverUrl?: string | null
   eventDate?: Date | string | null
   isPublished?: boolean
@@ -483,6 +529,8 @@ export type AlbumUncheckedCreateWithoutMediaInput = {
   title: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   coverUrl?: string | null
   eventDate?: Date | string | null
   isPublished?: boolean
@@ -510,6 +558,8 @@ export type AlbumUpdateWithoutMediaInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -522,6 +572,8 @@ export type AlbumUncheckedUpdateWithoutMediaInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   coverUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   eventDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isPublished?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -565,6 +617,8 @@ export type AlbumSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   title?: boolean
   slug?: boolean
   description?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
   coverUrl?: boolean
   eventDate?: boolean
   isPublished?: boolean
@@ -581,6 +635,8 @@ export type AlbumSelectScalar = {
   title?: boolean
   slug?: boolean
   description?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
   coverUrl?: boolean
   eventDate?: boolean
   isPublished?: boolean
@@ -588,7 +644,7 @@ export type AlbumSelectScalar = {
   updatedAt?: boolean
 }
 
-export type AlbumOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "description" | "coverUrl" | "eventDate" | "isPublished" | "createdAt" | "updatedAt", ExtArgs["result"]["album"]>
+export type AlbumOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "description" | "seoTitle" | "seoDescription" | "coverUrl" | "eventDate" | "isPublished" | "createdAt" | "updatedAt", ExtArgs["result"]["album"]>
 export type AlbumInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   media?: boolean | Prisma.Album$mediaArgs<ExtArgs>
   _count?: boolean | Prisma.AlbumCountOutputTypeDefaultArgs<ExtArgs>
@@ -604,6 +660,8 @@ export type $AlbumPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     title: string
     slug: string
     description: string | null
+    seoTitle: string | null
+    seoDescription: string | null
     coverUrl: string | null
     eventDate: Date | null
     isPublished: boolean
@@ -983,6 +1041,8 @@ export interface AlbumFieldRefs {
   readonly title: Prisma.FieldRef<"Album", 'String'>
   readonly slug: Prisma.FieldRef<"Album", 'String'>
   readonly description: Prisma.FieldRef<"Album", 'String'>
+  readonly seoTitle: Prisma.FieldRef<"Album", 'String'>
+  readonly seoDescription: Prisma.FieldRef<"Album", 'String'>
   readonly coverUrl: Prisma.FieldRef<"Album", 'String'>
   readonly eventDate: Prisma.FieldRef<"Album", 'DateTime'>
   readonly isPublished: Prisma.FieldRef<"Album", 'Boolean'>

@@ -45,7 +45,14 @@ export type ParishProfileMinAggregateOutputType = {
   email: string | null
   mapEmbedUrl: string | null
   logoUrl: string | null
+  faviconUrl: string | null
   heroUrl: string | null
+  tagline: string | null
+  footerText: string | null
+  copyrightText: string | null
+  seoTitle: string | null
+  seoDescription: string | null
+  ogImageUrl: string | null
   facebookUrl: string | null
   youtubeUrl: string | null
   createdAt: Date | null
@@ -63,7 +70,14 @@ export type ParishProfileMaxAggregateOutputType = {
   email: string | null
   mapEmbedUrl: string | null
   logoUrl: string | null
+  faviconUrl: string | null
   heroUrl: string | null
+  tagline: string | null
+  footerText: string | null
+  copyrightText: string | null
+  seoTitle: string | null
+  seoDescription: string | null
+  ogImageUrl: string | null
   facebookUrl: string | null
   youtubeUrl: string | null
   createdAt: Date | null
@@ -81,7 +95,15 @@ export type ParishProfileCountAggregateOutputType = {
   email: number
   mapEmbedUrl: number
   logoUrl: number
+  faviconUrl: number
   heroUrl: number
+  tagline: number
+  footerText: number
+  copyrightText: number
+  seoTitle: number
+  seoDescription: number
+  ogImageUrl: number
+  pageSeo: number
   facebookUrl: number
   youtubeUrl: number
   createdAt: number
@@ -109,7 +131,14 @@ export type ParishProfileMinAggregateInputType = {
   email?: true
   mapEmbedUrl?: true
   logoUrl?: true
+  faviconUrl?: true
   heroUrl?: true
+  tagline?: true
+  footerText?: true
+  copyrightText?: true
+  seoTitle?: true
+  seoDescription?: true
+  ogImageUrl?: true
   facebookUrl?: true
   youtubeUrl?: true
   createdAt?: true
@@ -127,7 +156,14 @@ export type ParishProfileMaxAggregateInputType = {
   email?: true
   mapEmbedUrl?: true
   logoUrl?: true
+  faviconUrl?: true
   heroUrl?: true
+  tagline?: true
+  footerText?: true
+  copyrightText?: true
+  seoTitle?: true
+  seoDescription?: true
+  ogImageUrl?: true
   facebookUrl?: true
   youtubeUrl?: true
   createdAt?: true
@@ -145,7 +181,15 @@ export type ParishProfileCountAggregateInputType = {
   email?: true
   mapEmbedUrl?: true
   logoUrl?: true
+  faviconUrl?: true
   heroUrl?: true
+  tagline?: true
+  footerText?: true
+  copyrightText?: true
+  seoTitle?: true
+  seoDescription?: true
+  ogImageUrl?: true
+  pageSeo?: true
   facebookUrl?: true
   youtubeUrl?: true
   createdAt?: true
@@ -250,7 +294,15 @@ export type ParishProfileGroupByOutputType = {
   email: string | null
   mapEmbedUrl: string | null
   logoUrl: string | null
+  faviconUrl: string | null
   heroUrl: string | null
+  tagline: string | null
+  footerText: string | null
+  copyrightText: string | null
+  seoTitle: string | null
+  seoDescription: string | null
+  ogImageUrl: string | null
+  pageSeo: runtime.JsonValue | null
   facebookUrl: string | null
   youtubeUrl: string | null
   createdAt: Date
@@ -291,7 +343,15 @@ export type ParishProfileWhereInput = {
   email?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
   mapEmbedUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
   logoUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  faviconUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
   heroUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  tagline?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  footerText?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  copyrightText?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  seoTitle?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  ogImageUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  pageSeo?: Prisma.JsonNullableFilter<"ParishProfile">
   facebookUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
   youtubeUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ParishProfile"> | Date | string
@@ -309,7 +369,15 @@ export type ParishProfileOrderByWithRelationInput = {
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   mapEmbedUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  faviconUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   heroUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  tagline?: Prisma.SortOrderInput | Prisma.SortOrder
+  footerText?: Prisma.SortOrderInput | Prisma.SortOrder
+  copyrightText?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
+  ogImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  pageSeo?: Prisma.SortOrderInput | Prisma.SortOrder
   facebookUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   youtubeUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -331,7 +399,15 @@ export type ParishProfileWhereUniqueInput = Prisma.AtLeast<{
   email?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
   mapEmbedUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
   logoUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  faviconUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
   heroUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  tagline?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  footerText?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  copyrightText?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  seoTitle?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  ogImageUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
+  pageSeo?: Prisma.JsonNullableFilter<"ParishProfile">
   facebookUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
   youtubeUrl?: Prisma.StringNullableFilter<"ParishProfile"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ParishProfile"> | Date | string
@@ -349,7 +425,15 @@ export type ParishProfileOrderByWithAggregationInput = {
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   mapEmbedUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   logoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  faviconUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   heroUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  tagline?: Prisma.SortOrderInput | Prisma.SortOrder
+  footerText?: Prisma.SortOrderInput | Prisma.SortOrder
+  copyrightText?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
+  ogImageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  pageSeo?: Prisma.SortOrderInput | Prisma.SortOrder
   facebookUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   youtubeUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -375,7 +459,15 @@ export type ParishProfileScalarWhereWithAggregatesInput = {
   email?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
   mapEmbedUrl?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
   logoUrl?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
+  faviconUrl?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
   heroUrl?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
+  tagline?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
+  footerText?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
+  copyrightText?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
+  seoTitle?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
+  seoDescription?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
+  ogImageUrl?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
+  pageSeo?: Prisma.JsonNullableWithAggregatesFilter<"ParishProfile">
   facebookUrl?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
   youtubeUrl?: Prisma.StringNullableWithAggregatesFilter<"ParishProfile"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ParishProfile"> | Date | string
@@ -392,7 +484,15 @@ export type ParishProfileCreateInput = {
   email?: string | null
   mapEmbedUrl?: string | null
   logoUrl?: string | null
+  faviconUrl?: string | null
   heroUrl?: string | null
+  tagline?: string | null
+  footerText?: string | null
+  copyrightText?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  ogImageUrl?: string | null
+  pageSeo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   facebookUrl?: string | null
   youtubeUrl?: string | null
   createdAt?: Date | string
@@ -410,7 +510,15 @@ export type ParishProfileUncheckedCreateInput = {
   email?: string | null
   mapEmbedUrl?: string | null
   logoUrl?: string | null
+  faviconUrl?: string | null
   heroUrl?: string | null
+  tagline?: string | null
+  footerText?: string | null
+  copyrightText?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  ogImageUrl?: string | null
+  pageSeo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   facebookUrl?: string | null
   youtubeUrl?: string | null
   createdAt?: Date | string
@@ -427,7 +535,15 @@ export type ParishProfileUpdateInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mapEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faviconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  copyrightText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pageSeo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   youtubeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -445,7 +561,15 @@ export type ParishProfileUncheckedUpdateInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mapEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faviconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  copyrightText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pageSeo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   youtubeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -463,7 +587,15 @@ export type ParishProfileCreateManyInput = {
   email?: string | null
   mapEmbedUrl?: string | null
   logoUrl?: string | null
+  faviconUrl?: string | null
   heroUrl?: string | null
+  tagline?: string | null
+  footerText?: string | null
+  copyrightText?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
+  ogImageUrl?: string | null
+  pageSeo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   facebookUrl?: string | null
   youtubeUrl?: string | null
   createdAt?: Date | string
@@ -480,7 +612,15 @@ export type ParishProfileUpdateManyMutationInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mapEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faviconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  copyrightText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pageSeo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   youtubeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -498,7 +638,15 @@ export type ParishProfileUncheckedUpdateManyInput = {
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   mapEmbedUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faviconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tagline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  footerText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  copyrightText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ogImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pageSeo?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   youtubeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -522,7 +670,15 @@ export type ParishProfileCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   mapEmbedUrl?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
+  faviconUrl?: Prisma.SortOrder
   heroUrl?: Prisma.SortOrder
+  tagline?: Prisma.SortOrder
+  footerText?: Prisma.SortOrder
+  copyrightText?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  ogImageUrl?: Prisma.SortOrder
+  pageSeo?: Prisma.SortOrder
   facebookUrl?: Prisma.SortOrder
   youtubeUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -544,7 +700,14 @@ export type ParishProfileMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   mapEmbedUrl?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
+  faviconUrl?: Prisma.SortOrder
   heroUrl?: Prisma.SortOrder
+  tagline?: Prisma.SortOrder
+  footerText?: Prisma.SortOrder
+  copyrightText?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  ogImageUrl?: Prisma.SortOrder
   facebookUrl?: Prisma.SortOrder
   youtubeUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -562,7 +725,14 @@ export type ParishProfileMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   mapEmbedUrl?: Prisma.SortOrder
   logoUrl?: Prisma.SortOrder
+  faviconUrl?: Prisma.SortOrder
   heroUrl?: Prisma.SortOrder
+  tagline?: Prisma.SortOrder
+  footerText?: Prisma.SortOrder
+  copyrightText?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  ogImageUrl?: Prisma.SortOrder
   facebookUrl?: Prisma.SortOrder
   youtubeUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -586,7 +756,15 @@ export type ParishProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   email?: boolean
   mapEmbedUrl?: boolean
   logoUrl?: boolean
+  faviconUrl?: boolean
   heroUrl?: boolean
+  tagline?: boolean
+  footerText?: boolean
+  copyrightText?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  ogImageUrl?: boolean
+  pageSeo?: boolean
   facebookUrl?: boolean
   youtubeUrl?: boolean
   createdAt?: boolean
@@ -606,14 +784,22 @@ export type ParishProfileSelectScalar = {
   email?: boolean
   mapEmbedUrl?: boolean
   logoUrl?: boolean
+  faviconUrl?: boolean
   heroUrl?: boolean
+  tagline?: boolean
+  footerText?: boolean
+  copyrightText?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  ogImageUrl?: boolean
+  pageSeo?: boolean
   facebookUrl?: boolean
   youtubeUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ParishProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "diocese" | "patronSaint" | "description" | "address" | "phone" | "email" | "mapEmbedUrl" | "logoUrl" | "heroUrl" | "facebookUrl" | "youtubeUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["parishProfile"]>
+export type ParishProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "diocese" | "patronSaint" | "description" | "address" | "phone" | "email" | "mapEmbedUrl" | "logoUrl" | "faviconUrl" | "heroUrl" | "tagline" | "footerText" | "copyrightText" | "seoTitle" | "seoDescription" | "ogImageUrl" | "pageSeo" | "facebookUrl" | "youtubeUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["parishProfile"]>
 
 export type $ParishProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ParishProfile"
@@ -629,7 +815,15 @@ export type $ParishProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     email: string | null
     mapEmbedUrl: string | null
     logoUrl: string | null
+    faviconUrl: string | null
     heroUrl: string | null
+    tagline: string | null
+    footerText: string | null
+    copyrightText: string | null
+    seoTitle: string | null
+    seoDescription: string | null
+    ogImageUrl: string | null
+    pageSeo: runtime.JsonValue | null
     facebookUrl: string | null
     youtubeUrl: string | null
     createdAt: Date
@@ -1013,7 +1207,15 @@ export interface ParishProfileFieldRefs {
   readonly email: Prisma.FieldRef<"ParishProfile", 'String'>
   readonly mapEmbedUrl: Prisma.FieldRef<"ParishProfile", 'String'>
   readonly logoUrl: Prisma.FieldRef<"ParishProfile", 'String'>
+  readonly faviconUrl: Prisma.FieldRef<"ParishProfile", 'String'>
   readonly heroUrl: Prisma.FieldRef<"ParishProfile", 'String'>
+  readonly tagline: Prisma.FieldRef<"ParishProfile", 'String'>
+  readonly footerText: Prisma.FieldRef<"ParishProfile", 'String'>
+  readonly copyrightText: Prisma.FieldRef<"ParishProfile", 'String'>
+  readonly seoTitle: Prisma.FieldRef<"ParishProfile", 'String'>
+  readonly seoDescription: Prisma.FieldRef<"ParishProfile", 'String'>
+  readonly ogImageUrl: Prisma.FieldRef<"ParishProfile", 'String'>
+  readonly pageSeo: Prisma.FieldRef<"ParishProfile", 'Json'>
   readonly facebookUrl: Prisma.FieldRef<"ParishProfile", 'String'>
   readonly youtubeUrl: Prisma.FieldRef<"ParishProfile", 'String'>
   readonly createdAt: Prisma.FieldRef<"ParishProfile", 'DateTime'>

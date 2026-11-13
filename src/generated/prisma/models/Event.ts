@@ -39,6 +39,8 @@ export type EventMinAggregateOutputType = {
   title: string | null
   slug: string | null
   description: string | null
+  seoTitle: string | null
+  seoDescription: string | null
   startsAt: Date | null
   endsAt: Date | null
   location: string | null
@@ -54,6 +56,8 @@ export type EventMaxAggregateOutputType = {
   title: string | null
   slug: string | null
   description: string | null
+  seoTitle: string | null
+  seoDescription: string | null
   startsAt: Date | null
   endsAt: Date | null
   location: string | null
@@ -69,6 +73,8 @@ export type EventCountAggregateOutputType = {
   title: number
   slug: number
   description: number
+  seoTitle: number
+  seoDescription: number
   startsAt: number
   endsAt: number
   location: number
@@ -94,6 +100,8 @@ export type EventMinAggregateInputType = {
   title?: true
   slug?: true
   description?: true
+  seoTitle?: true
+  seoDescription?: true
   startsAt?: true
   endsAt?: true
   location?: true
@@ -109,6 +117,8 @@ export type EventMaxAggregateInputType = {
   title?: true
   slug?: true
   description?: true
+  seoTitle?: true
+  seoDescription?: true
   startsAt?: true
   endsAt?: true
   location?: true
@@ -124,6 +134,8 @@ export type EventCountAggregateInputType = {
   title?: true
   slug?: true
   description?: true
+  seoTitle?: true
+  seoDescription?: true
   startsAt?: true
   endsAt?: true
   location?: true
@@ -226,6 +238,8 @@ export type EventGroupByOutputType = {
   title: string
   slug: string
   description: string
+  seoTitle: string | null
+  seoDescription: string | null
   startsAt: Date
   endsAt: Date | null
   location: string
@@ -264,6 +278,8 @@ export type EventWhereInput = {
   title?: Prisma.StringFilter<"Event"> | string
   slug?: Prisma.StringFilter<"Event"> | string
   description?: Prisma.StringFilter<"Event"> | string
+  seoTitle?: Prisma.StringNullableFilter<"Event"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Event"> | string | null
   startsAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   endsAt?: Prisma.DateTimeNullableFilter<"Event"> | Date | string | null
   location?: Prisma.StringFilter<"Event"> | string
@@ -279,6 +295,8 @@ export type EventOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   startsAt?: Prisma.SortOrder
   endsAt?: Prisma.SortOrderInput | Prisma.SortOrder
   location?: Prisma.SortOrder
@@ -298,6 +316,8 @@ export type EventWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.EventWhereInput | Prisma.EventWhereInput[]
   title?: Prisma.StringFilter<"Event"> | string
   description?: Prisma.StringFilter<"Event"> | string
+  seoTitle?: Prisma.StringNullableFilter<"Event"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Event"> | string | null
   startsAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   endsAt?: Prisma.DateTimeNullableFilter<"Event"> | Date | string | null
   location?: Prisma.StringFilter<"Event"> | string
@@ -313,6 +333,8 @@ export type EventOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   startsAt?: Prisma.SortOrder
   endsAt?: Prisma.SortOrderInput | Prisma.SortOrder
   location?: Prisma.SortOrder
@@ -336,6 +358,8 @@ export type EventScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"Event"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Event"> | string
   description?: Prisma.StringWithAggregatesFilter<"Event"> | string
+  seoTitle?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  seoDescription?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
   startsAt?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
   endsAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Event"> | Date | string | null
   location?: Prisma.StringWithAggregatesFilter<"Event"> | string
@@ -350,6 +374,8 @@ export type EventCreateInput = {
   title: string
   slug: string
   description: string
+  seoTitle?: string | null
+  seoDescription?: string | null
   startsAt: Date | string
   endsAt?: Date | string | null
   location: string
@@ -365,6 +391,8 @@ export type EventUncheckedCreateInput = {
   title: string
   slug: string
   description: string
+  seoTitle?: string | null
+  seoDescription?: string | null
   startsAt: Date | string
   endsAt?: Date | string | null
   location: string
@@ -379,6 +407,8 @@ export type EventUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   location?: Prisma.StringFieldUpdateOperationsInput | string
@@ -394,6 +424,8 @@ export type EventUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   location?: Prisma.StringFieldUpdateOperationsInput | string
@@ -409,6 +441,8 @@ export type EventCreateManyInput = {
   title: string
   slug: string
   description: string
+  seoTitle?: string | null
+  seoDescription?: string | null
   startsAt: Date | string
   endsAt?: Date | string | null
   location: string
@@ -423,6 +457,8 @@ export type EventUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   location?: Prisma.StringFieldUpdateOperationsInput | string
@@ -438,6 +474,8 @@ export type EventUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   location?: Prisma.StringFieldUpdateOperationsInput | string
@@ -459,6 +497,8 @@ export type EventCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
   startsAt?: Prisma.SortOrder
   endsAt?: Prisma.SortOrder
   location?: Prisma.SortOrder
@@ -478,6 +518,8 @@ export type EventMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
   startsAt?: Prisma.SortOrder
   endsAt?: Prisma.SortOrder
   location?: Prisma.SortOrder
@@ -493,6 +535,8 @@ export type EventMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
   startsAt?: Prisma.SortOrder
   endsAt?: Prisma.SortOrder
   location?: Prisma.SortOrder
@@ -514,6 +558,8 @@ export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   title?: boolean
   slug?: boolean
   description?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
   startsAt?: boolean
   endsAt?: boolean
   location?: boolean
@@ -531,6 +577,8 @@ export type EventSelectScalar = {
   title?: boolean
   slug?: boolean
   description?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
   startsAt?: boolean
   endsAt?: boolean
   location?: boolean
@@ -541,7 +589,7 @@ export type EventSelectScalar = {
   updatedAt?: boolean
 }
 
-export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "description" | "startsAt" | "endsAt" | "location" | "imageUrl" | "isFeatured" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
+export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "description" | "seoTitle" | "seoDescription" | "startsAt" | "endsAt" | "location" | "imageUrl" | "isFeatured" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
 
 export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Event"
@@ -551,6 +599,8 @@ export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     title: string
     slug: string
     description: string
+    seoTitle: string | null
+    seoDescription: string | null
     startsAt: Date
     endsAt: Date | null
     location: string
@@ -932,6 +982,8 @@ export interface EventFieldRefs {
   readonly title: Prisma.FieldRef<"Event", 'String'>
   readonly slug: Prisma.FieldRef<"Event", 'String'>
   readonly description: Prisma.FieldRef<"Event", 'String'>
+  readonly seoTitle: Prisma.FieldRef<"Event", 'String'>
+  readonly seoDescription: Prisma.FieldRef<"Event", 'String'>
   readonly startsAt: Prisma.FieldRef<"Event", 'DateTime'>
   readonly endsAt: Prisma.FieldRef<"Event", 'DateTime'>
   readonly location: Prisma.FieldRef<"Event", 'String'>

@@ -57,6 +57,8 @@ model Category {
   name        String
   slug        String         @unique
   description String?        @db.Text
+  seoTitle    String?
+  seoDescription String?      @db.Text
   imageId     Int?
   sortOrder   Int            @default(0)
   isActive    Boolean        @default(true)
@@ -165,6 +167,9 @@ model Banner {
   imageUrl    String
   primaryText String?
   primaryUrl  String?
+  secondaryText String?
+  secondaryUrl  String?
+  mobileImageUrl String?
   sortOrder   Int      @default(0)
   isActive    Boolean  @default(true)
   startsAt    DateTime?
@@ -231,6 +236,8 @@ model Event {
   title       String
   slug        String   @unique
   description String   @db.Text
+  seoTitle    String?
+  seoDescription String? @db.Text
   startsAt    DateTime
   endsAt      DateTime?
   location    String
@@ -247,6 +254,8 @@ model Album {
   title       String
   slug        String       @unique
   description String?      @db.Text
+  seoTitle    String?
+  seoDescription String?   @db.Text
   coverUrl    String?
   eventDate   DateTime?
   isPublished Boolean      @default(true)
@@ -275,7 +284,15 @@ model ParishProfile {
   email       String?
   mapEmbedUrl String?  @db.Text
   logoUrl     String?
+  faviconUrl  String?
   heroUrl     String?
+  tagline     String?  @db.Text
+  footerText  String?  @db.Text
+  copyrightText String? @db.Text
+  seoTitle    String?
+  seoDescription String? @db.Text
+  ogImageUrl  String?
+  pageSeo     Json?
   facebookUrl String?
   youtubeUrl  String?
   createdAt   DateTime @default(now())

@@ -46,6 +46,8 @@ export type CategoryMinAggregateOutputType = {
   name: string | null
   slug: string | null
   description: string | null
+  seoTitle: string | null
+  seoDescription: string | null
   imageId: number | null
   sortOrder: number | null
   isActive: boolean | null
@@ -59,6 +61,8 @@ export type CategoryMaxAggregateOutputType = {
   name: string | null
   slug: string | null
   description: string | null
+  seoTitle: string | null
+  seoDescription: string | null
   imageId: number | null
   sortOrder: number | null
   isActive: boolean | null
@@ -72,6 +76,8 @@ export type CategoryCountAggregateOutputType = {
   name: number
   slug: number
   description: number
+  seoTitle: number
+  seoDescription: number
   imageId: number
   sortOrder: number
   isActive: number
@@ -101,6 +107,8 @@ export type CategoryMinAggregateInputType = {
   name?: true
   slug?: true
   description?: true
+  seoTitle?: true
+  seoDescription?: true
   imageId?: true
   sortOrder?: true
   isActive?: true
@@ -114,6 +122,8 @@ export type CategoryMaxAggregateInputType = {
   name?: true
   slug?: true
   description?: true
+  seoTitle?: true
+  seoDescription?: true
   imageId?: true
   sortOrder?: true
   isActive?: true
@@ -127,6 +137,8 @@ export type CategoryCountAggregateInputType = {
   name?: true
   slug?: true
   description?: true
+  seoTitle?: true
+  seoDescription?: true
   imageId?: true
   sortOrder?: true
   isActive?: true
@@ -227,6 +239,8 @@ export type CategoryGroupByOutputType = {
   name: string
   slug: string
   description: string | null
+  seoTitle: string | null
+  seoDescription: string | null
   imageId: number | null
   sortOrder: number
   isActive: boolean
@@ -263,6 +277,8 @@ export type CategoryWhereInput = {
   name?: Prisma.StringFilter<"Category"> | string
   slug?: Prisma.StringFilter<"Category"> | string
   description?: Prisma.StringNullableFilter<"Category"> | string | null
+  seoTitle?: Prisma.StringNullableFilter<"Category"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Category"> | string | null
   imageId?: Prisma.IntNullableFilter<"Category"> | number | null
   sortOrder?: Prisma.IntFilter<"Category"> | number
   isActive?: Prisma.BoolFilter<"Category"> | boolean
@@ -281,6 +297,8 @@ export type CategoryOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   imageId?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -303,6 +321,8 @@ export type CategoryWhereUniqueInput = Prisma.AtLeast<{
   parentId?: Prisma.IntNullableFilter<"Category"> | number | null
   name?: Prisma.StringFilter<"Category"> | string
   description?: Prisma.StringNullableFilter<"Category"> | string | null
+  seoTitle?: Prisma.StringNullableFilter<"Category"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Category"> | string | null
   imageId?: Prisma.IntNullableFilter<"Category"> | number | null
   sortOrder?: Prisma.IntFilter<"Category"> | number
   isActive?: Prisma.BoolFilter<"Category"> | boolean
@@ -321,6 +341,8 @@ export type CategoryOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   imageId?: Prisma.SortOrderInput | Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -342,6 +364,8 @@ export type CategoryScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Category"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Category"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Category"> | string | null
+  seoTitle?: Prisma.StringNullableWithAggregatesFilter<"Category"> | string | null
+  seoDescription?: Prisma.StringNullableWithAggregatesFilter<"Category"> | string | null
   imageId?: Prisma.IntNullableWithAggregatesFilter<"Category"> | number | null
   sortOrder?: Prisma.IntWithAggregatesFilter<"Category"> | number
   isActive?: Prisma.BoolWithAggregatesFilter<"Category"> | boolean
@@ -353,6 +377,8 @@ export type CategoryCreateInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -370,6 +396,8 @@ export type CategoryUncheckedCreateInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   imageId?: number | null
   sortOrder?: number
   isActive?: boolean
@@ -384,6 +412,8 @@ export type CategoryUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -401,6 +431,8 @@ export type CategoryUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -417,6 +449,8 @@ export type CategoryCreateManyInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   imageId?: number | null
   sortOrder?: number
   isActive?: boolean
@@ -428,6 +462,8 @@ export type CategoryUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -440,6 +476,8 @@ export type CategoryUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -474,6 +512,8 @@ export type CategoryCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
   imageId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -494,6 +534,8 @@ export type CategoryMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
   imageId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -507,6 +549,8 @@ export type CategoryMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
   imageId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -660,6 +704,8 @@ export type CategoryCreateWithoutChildrenInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -676,6 +722,8 @@ export type CategoryUncheckedCreateWithoutChildrenInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   imageId?: number | null
   sortOrder?: number
   isActive?: boolean
@@ -694,6 +742,8 @@ export type CategoryCreateWithoutParentInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -709,6 +759,8 @@ export type CategoryUncheckedCreateWithoutParentInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   imageId?: number | null
   sortOrder?: number
   isActive?: boolean
@@ -744,6 +796,8 @@ export type CategoryUpdateWithoutChildrenInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -760,6 +814,8 @@ export type CategoryUncheckedUpdateWithoutChildrenInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -794,6 +850,8 @@ export type CategoryScalarWhereInput = {
   name?: Prisma.StringFilter<"Category"> | string
   slug?: Prisma.StringFilter<"Category"> | string
   description?: Prisma.StringNullableFilter<"Category"> | string | null
+  seoTitle?: Prisma.StringNullableFilter<"Category"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Category"> | string | null
   imageId?: Prisma.IntNullableFilter<"Category"> | number | null
   sortOrder?: Prisma.IntFilter<"Category"> | number
   isActive?: Prisma.BoolFilter<"Category"> | boolean
@@ -805,6 +863,8 @@ export type CategoryCreateWithoutPostsInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -821,6 +881,8 @@ export type CategoryUncheckedCreateWithoutPostsInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   imageId?: number | null
   sortOrder?: number
   isActive?: boolean
@@ -850,6 +912,8 @@ export type CategoryUpdateWithoutPostsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -866,6 +930,8 @@ export type CategoryUncheckedUpdateWithoutPostsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -879,6 +945,8 @@ export type CategoryCreateWithoutImageInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -895,6 +963,8 @@ export type CategoryUncheckedCreateWithoutImageInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -934,6 +1004,8 @@ export type CategoryCreateWithoutSectionsInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -950,6 +1022,8 @@ export type CategoryUncheckedCreateWithoutSectionsInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   imageId?: number | null
   sortOrder?: number
   isActive?: boolean
@@ -979,6 +1053,8 @@ export type CategoryUpdateWithoutSectionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -995,6 +1071,8 @@ export type CategoryUncheckedUpdateWithoutSectionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1009,6 +1087,8 @@ export type CategoryCreateManyParentInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   imageId?: number | null
   sortOrder?: number
   isActive?: boolean
@@ -1020,6 +1100,8 @@ export type CategoryUpdateWithoutParentInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1035,6 +1117,8 @@ export type CategoryUncheckedUpdateWithoutParentInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1050,6 +1134,8 @@ export type CategoryUncheckedUpdateManyWithoutParentInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   imageId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1063,6 +1149,8 @@ export type CategoryCreateManyImageInput = {
   name: string
   slug: string
   description?: string | null
+  seoTitle?: string | null
+  seoDescription?: string | null
   sortOrder?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -1073,6 +1161,8 @@ export type CategoryUpdateWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1089,6 +1179,8 @@ export type CategoryUncheckedUpdateWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1104,6 +1196,8 @@ export type CategoryUncheckedUpdateManyWithoutImageInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1165,6 +1259,8 @@ export type CategorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   name?: boolean
   slug?: boolean
   description?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
   imageId?: boolean
   sortOrder?: boolean
   isActive?: boolean
@@ -1186,6 +1282,8 @@ export type CategorySelectScalar = {
   name?: boolean
   slug?: boolean
   description?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
   imageId?: boolean
   sortOrder?: boolean
   isActive?: boolean
@@ -1193,7 +1291,7 @@ export type CategorySelectScalar = {
   updatedAt?: boolean
 }
 
-export type CategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "parentId" | "name" | "slug" | "description" | "imageId" | "sortOrder" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["category"]>
+export type CategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "parentId" | "name" | "slug" | "description" | "seoTitle" | "seoDescription" | "imageId" | "sortOrder" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["category"]>
 export type CategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   parent?: boolean | Prisma.Category$parentArgs<ExtArgs>
   children?: boolean | Prisma.Category$childrenArgs<ExtArgs>
@@ -1218,6 +1316,8 @@ export type $CategoryPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     name: string
     slug: string
     description: string | null
+    seoTitle: string | null
+    seoDescription: string | null
     imageId: number | null
     sortOrder: number
     isActive: boolean
@@ -1602,6 +1702,8 @@ export interface CategoryFieldRefs {
   readonly name: Prisma.FieldRef<"Category", 'String'>
   readonly slug: Prisma.FieldRef<"Category", 'String'>
   readonly description: Prisma.FieldRef<"Category", 'String'>
+  readonly seoTitle: Prisma.FieldRef<"Category", 'String'>
+  readonly seoDescription: Prisma.FieldRef<"Category", 'String'>
   readonly imageId: Prisma.FieldRef<"Category", 'Int'>
   readonly sortOrder: Prisma.FieldRef<"Category", 'Int'>
   readonly isActive: Prisma.FieldRef<"Category", 'Boolean'>

@@ -1,5 +1,10 @@
 import { RoleCode } from '../src/generated/prisma/client.js';
 import { prisma } from '../src/lib/prisma.js';
+import { getEnv } from '../src/config/env.js';
+
+if (getEnv().DATABASE_NAME !== 'appglv_unified_test') {
+  throw new Error('Tests refuse to modify a database other than appglv_unified_test.');
+}
 
 const permissionDefinitions = [
   ['parish.manage', 'Manage Parish content'],

@@ -16,7 +16,7 @@ export const mediaService = {
   async upload(files: Express.Multer.File[], actorId: string, folder = 'general') {
     if (!cloudinaryConfigured)
       throw new ApiError(503, 'Cloudinary chưa được cấu hình. Hãy bổ sung credentials trong .env backend.');
-    const safeFolder = ['posts', 'banners', 'albums', 'general'].includes(folder) ? folder : 'general';
+    const safeFolder = ['posts', 'banners', 'albums', 'branding', 'general'].includes(folder) ? folder : 'general';
     const results = [];
     for (const file of files) {
       const asset = await uploadBuffer(file.buffer, `giao-xu-duc-my/${safeFolder}`);
@@ -49,11 +49,11 @@ export const mediaService = {
   async remove(id: number, actorId: string) {
     const media = await prisma.media.findUnique({ where: { id } });
     if (!media) throw new ApiError(404, 'Không tìm thấy ảnh');
-    if (!cloudinaryConfigured) throw new ApiError(503, 'Cloudinary chưa được cấu hình');
-    await cloudinary.uploader.destroy(media.cloudinaryPublicId);
+    // Published pages may still reference this URL. Hide the library entry without
+    // destroying the Cloudinary object until a separate reference audit is available.
     await prisma.$transaction([
       prisma.media.update({ where: { id }, data: { deletedAt: new Date() } }),
-      prisma.auditLog.create({ data: { actorId, action: 'DELETE_MEDIA', entityType: 'media', entityId: String(id) } }),
+      prisma.auditLog.create({ data: { actorId, action: 'HIDE_MEDIA', entityType: 'media', entityId: String(id) } }),
     ]);
   },
 };

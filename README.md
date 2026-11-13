@@ -27,6 +27,12 @@ Invoke-WebRequest http://localhost:5000/api/v1/ready
 
 Express + TypeScript + Prisma API cho website Giáo xứ Đức Mỹ.
 
+## CMS website
+
+Migrations `202611120001_parish_cms_branding_seo` và `202611130001_parish_page_seo` chỉ thêm cột tùy chọn cho cấu hình, SEO từng trang, banner, chuyên mục, sự kiện và album. Không chạy seed trên database đang dùng. Admin có quyền `parish.manage` quản lý nội dung qua `/api/v1/admin/*`; ảnh Cloudinary ở `/api/v1/admin/media`, còn `/api/v1/public/*` chỉ trả nội dung công khai. Xóa ảnh khỏi thư viện chỉ ẩn bản ghi để URL đã dùng trên website không bị hỏng. `/api/v1/public/sitemap.xml` tổng hợp bài viết, chuyên mục, sự kiện và chính sách đã công bố từ database; `CLIENT_URL` phải là origin HTTPS của website.
+
+Kiểm thử database chỉ được chạy trên `appglv_unified_test`; `tests/setup-access.ts` từ chối ghi vào database tên khác. CMS unit tests không cần database: `npx.cmd vitest run --config vitest.cms.config.ts`. Khi triển khai production, dùng quy trình manual backup và restore check đã có trước khi áp dụng Prisma migration.
+
 ## Yêu cầu
 
 - Node.js LTS 22 trở lên

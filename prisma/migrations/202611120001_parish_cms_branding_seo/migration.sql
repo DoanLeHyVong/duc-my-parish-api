@@ -1,0 +1,25 @@
+ALTER TABLE `ParishProfile`
+  ADD COLUMN `faviconUrl` VARCHAR(191) NULL,
+  ADD COLUMN `tagline` TEXT NULL,
+  ADD COLUMN `footerText` TEXT NULL,
+  ADD COLUMN `copyrightText` TEXT NULL,
+  ADD COLUMN `seoTitle` VARCHAR(191) NULL,
+  ADD COLUMN `seoDescription` TEXT NULL,
+  ADD COLUMN `ogImageUrl` VARCHAR(191) NULL;
+
+ALTER TABLE `Banner`
+  ADD COLUMN `secondaryText` VARCHAR(191) NULL,
+  ADD COLUMN `secondaryUrl` VARCHAR(191) NULL,
+  ADD COLUMN `mobileImageUrl` VARCHAR(191) NULL;
+
+ALTER TABLE `Category`
+  ADD COLUMN `seoTitle` VARCHAR(191) NULL,
+  ADD COLUMN `seoDescription` TEXT NULL;
+
+ALTER TABLE `Event`
+  ADD COLUMN `seoTitle` VARCHAR(191) NULL,
+  ADD COLUMN `seoDescription` TEXT NULL;
+
+ALTER TABLE `Album`
+  ADD COLUMN `seoTitle` VARCHAR(191) NULL,
+  ADD COLUMN `seoDescription` TEXT NULL;

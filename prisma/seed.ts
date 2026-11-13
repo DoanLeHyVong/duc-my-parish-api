@@ -16,7 +16,7 @@ const categoryNames = [
   'Tin Giáo phận',
   'Học hỏi Kinh Thánh',
   'Giáo lý',
-  'Phá»¥ng vá»¥',
+  'Phụng vụ',
 ];
 const slugify = (value: string) =>
   value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D')
@@ -80,12 +80,12 @@ async function main() {
   });
   await prisma.menuItem.deleteMany({ where: { menuId: menu.id } });
   const nav = [
-    ['Trang chá»§', '/'],
-    ['Giá»›i thiá»‡u', '/about'],
+    ['Trang chủ', '/'],
+    ['Giới thiệu', '/about'],
     ['Thông báo', '/categories/announcements'],
-    ['Giá» lá»…', '/mass-schedule'],
+    ['Giờ lễ', '/mass-schedule'],
     ['Lời Chúa', '/categories/daily-word'],
-    ['Tin tá»©c', '/categories/parish-news'],
+    ['Tin tức', '/categories/parish-news'],
     ['Thư viện', '/gallery'],
     ['Liên hệ', '/contact'],
   ];
@@ -147,7 +147,7 @@ async function main() {
       title: sortOrder === 0 ? 'Giáo xứ Đức Mỹ' : `Đời sống đức tin ${sortOrder + 1}`,
       subtitle: 'Hiệp nhất trong đức tin — Lan tỏa yêu thương',
       imageUrl: hero,
-      primaryText: 'Xem giá» lá»…',
+      primaryText: 'Xem giờ lễ',
       primaryUrl: '/mass-schedule',
       sortOrder,
     })),
@@ -207,7 +207,7 @@ async function main() {
   await prisma.homeSection.deleteMany();
   const sections = [
     ['about', 'Giới thiệu Giáo xứ Đức Mỹ', 'FEATURED'],
-    ['latest-news', 'Tin tá»©c má»›i nháº¥t', 'GRID'],
+    ['latest-news', 'Tin tức mới nhất', 'GRID'],
     ['announcements', 'Thông báo giáo xứ', 'LIST'],
     ['daily-word', 'Chia sẻ Lời Chúa hằng ngày', 'FEATURED'],
     ['diocese-news', 'Tin Giáo phận', 'GRID'],
