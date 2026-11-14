@@ -105,6 +105,10 @@ describe('unified authentication, RBAC, and policies with MariaDB', () => {
     expect((await request(app).get('/api/v1/public/policies/privacy')).status).toBe(404);
 
     expect((await request(app).post('/api/v1/admin/policies/privacy/publish').set(bearer(parishToken)).send({ revision: 1 })).status).toBe(200);
+    expect((await request(app).get('/api/v1/public/policies/privacy')).status).toBe(404);
+    expect((await request(app).patch('/api/v1/admin/policies/privacy/visibility').set(bearer(appToken)).send({ isActive: true })).status).toBe(403);
+    expect((await request(app).patch('/api/v1/admin/policies/privacy/visibility').set(bearer(parishToken)).send({ isActive: true })).status).toBe(200);
+    expect((await request(app).patch('/api/v1/admin/policies/privacy/visibility').set(bearer(parishToken)).send({ isActive: false })).status).toBe(409);
     const published = await request(app).get('/api/v1/public/policies/privacy');
     expect(published.status).toBe(200);
     expect(published.body.data).toMatchObject({ slug: 'privacy', revision: 1 });
@@ -120,5 +124,20 @@ describe('unified authentication, RBAC, and policies with MariaDB', () => {
     const stale = await request(app).post('/api/v1/admin/policies/privacy/publish').set(bearer(parishToken)).send({ revision: 2 });
     expect(stale.status).toBe(409);
     expect(stale.body.error.code).toBe('STALE_POLICY_REVISION');
+  });
+
+  it('hides a custom published policy without deleting its revision', async () => {
+    const admin = await createUser('policy.custom', [RoleCode.PARISH_ADMIN]);
+    const token = signAccessToken({ sub: admin.id, av: admin.authVersion });
+    const created = await request(app).post('/api/v1/admin/policies').set(bearer(token)).send({ kind: null, slug: 'community-rules', title: 'Community rules', contentHtml: '<p>Rules</p>' });
+    expect(created.status).toBe(201);
+    expect((await request(app).patch('/api/v1/admin/policies/community-rules/visibility').set(bearer(token)).send({ isActive: true })).status).toBe(409);
+    expect((await request(app).post('/api/v1/admin/policies/community-rules/publish').set(bearer(token)).send({ revision: 1 })).status).toBe(200);
+    expect((await request(app).patch('/api/v1/admin/policies/community-rules/visibility').set(bearer(token)).send({ isActive: true })).status).toBe(200);
+    expect((await request(app).get('/api/v1/public/policies')).body.data.map((item: { slug: string }) => item.slug)).toContain('community-rules');
+    expect((await request(app).patch('/api/v1/admin/policies/community-rules/visibility').set(bearer(token)).send({ isActive: false })).status).toBe(200);
+    expect((await request(app).get('/api/v1/public/policies/community-rules')).status).toBe(404);
+    expect((await request(app).get('/api/v1/public/policies')).body.data).toEqual([]);
+    expect((await prisma.policyRevision.count({ where: { policyId: created.body.data.id } })).valueOf()).toBe(1);
   });
 });

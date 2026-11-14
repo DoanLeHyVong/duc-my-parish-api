@@ -29,6 +29,7 @@ export type PolicyMinAggregateOutputType = {
   kind: $Enums.PolicyKind | null
   slug: string | null
   title: string | null
+  isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -38,6 +39,7 @@ export type PolicyMaxAggregateOutputType = {
   kind: $Enums.PolicyKind | null
   slug: string | null
   title: string | null
+  isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,6 +49,7 @@ export type PolicyCountAggregateOutputType = {
   kind: number
   slug: number
   title: number
+  isActive: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -58,6 +61,7 @@ export type PolicyMinAggregateInputType = {
   kind?: true
   slug?: true
   title?: true
+  isActive?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -67,6 +71,7 @@ export type PolicyMaxAggregateInputType = {
   kind?: true
   slug?: true
   title?: true
+  isActive?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -76,6 +81,7 @@ export type PolicyCountAggregateInputType = {
   kind?: true
   slug?: true
   title?: true
+  isActive?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -155,9 +161,10 @@ export type PolicyGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 
 export type PolicyGroupByOutputType = {
   id: string
-  kind: $Enums.PolicyKind
+  kind: $Enums.PolicyKind | null
   slug: string
   title: string
+  isActive: boolean
   createdAt: Date
   updatedAt: Date
   _count: PolicyCountAggregateOutputType | null
@@ -185,9 +192,10 @@ export type PolicyWhereInput = {
   OR?: Prisma.PolicyWhereInput[]
   NOT?: Prisma.PolicyWhereInput | Prisma.PolicyWhereInput[]
   id?: Prisma.StringFilter<"Policy"> | string
-  kind?: Prisma.EnumPolicyKindFilter<"Policy"> | $Enums.PolicyKind
+  kind?: Prisma.EnumPolicyKindNullableFilter<"Policy"> | $Enums.PolicyKind | null
   slug?: Prisma.StringFilter<"Policy"> | string
   title?: Prisma.StringFilter<"Policy"> | string
+  isActive?: Prisma.BoolFilter<"Policy"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Policy"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Policy"> | Date | string
   revisions?: Prisma.PolicyRevisionListRelationFilter
@@ -195,9 +203,10 @@ export type PolicyWhereInput = {
 
 export type PolicyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  kind?: Prisma.SortOrder
+  kind?: Prisma.SortOrderInput | Prisma.SortOrder
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   revisions?: Prisma.PolicyRevisionOrderByRelationAggregateInput
@@ -212,6 +221,7 @@ export type PolicyWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.PolicyWhereInput[]
   NOT?: Prisma.PolicyWhereInput | Prisma.PolicyWhereInput[]
   title?: Prisma.StringFilter<"Policy"> | string
+  isActive?: Prisma.BoolFilter<"Policy"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Policy"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Policy"> | Date | string
   revisions?: Prisma.PolicyRevisionListRelationFilter
@@ -219,9 +229,10 @@ export type PolicyWhereUniqueInput = Prisma.AtLeast<{
 
 export type PolicyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  kind?: Prisma.SortOrder
+  kind?: Prisma.SortOrderInput | Prisma.SortOrder
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PolicyCountOrderByAggregateInput
@@ -234,18 +245,20 @@ export type PolicyScalarWhereWithAggregatesInput = {
   OR?: Prisma.PolicyScalarWhereWithAggregatesInput[]
   NOT?: Prisma.PolicyScalarWhereWithAggregatesInput | Prisma.PolicyScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Policy"> | string
-  kind?: Prisma.EnumPolicyKindWithAggregatesFilter<"Policy"> | $Enums.PolicyKind
+  kind?: Prisma.EnumPolicyKindNullableWithAggregatesFilter<"Policy"> | $Enums.PolicyKind | null
   slug?: Prisma.StringWithAggregatesFilter<"Policy"> | string
   title?: Prisma.StringWithAggregatesFilter<"Policy"> | string
+  isActive?: Prisma.BoolWithAggregatesFilter<"Policy"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Policy"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Policy"> | Date | string
 }
 
 export type PolicyCreateInput = {
   id?: string
-  kind: $Enums.PolicyKind
+  kind?: $Enums.PolicyKind | null
   slug: string
   title: string
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   revisions?: Prisma.PolicyRevisionCreateNestedManyWithoutPolicyInput
@@ -253,9 +266,10 @@ export type PolicyCreateInput = {
 
 export type PolicyUncheckedCreateInput = {
   id?: string
-  kind: $Enums.PolicyKind
+  kind?: $Enums.PolicyKind | null
   slug: string
   title: string
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   revisions?: Prisma.PolicyRevisionUncheckedCreateNestedManyWithoutPolicyInput
@@ -263,9 +277,10 @@ export type PolicyUncheckedCreateInput = {
 
 export type PolicyUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.EnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind
+  kind?: Prisma.NullableEnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   revisions?: Prisma.PolicyRevisionUpdateManyWithoutPolicyNestedInput
@@ -273,9 +288,10 @@ export type PolicyUpdateInput = {
 
 export type PolicyUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.EnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind
+  kind?: Prisma.NullableEnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   revisions?: Prisma.PolicyRevisionUncheckedUpdateManyWithoutPolicyNestedInput
@@ -283,27 +299,30 @@ export type PolicyUncheckedUpdateInput = {
 
 export type PolicyCreateManyInput = {
   id?: string
-  kind: $Enums.PolicyKind
+  kind?: $Enums.PolicyKind | null
   slug: string
   title: string
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type PolicyUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.EnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind
+  kind?: Prisma.NullableEnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type PolicyUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.EnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind
+  kind?: Prisma.NullableEnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -319,6 +338,7 @@ export type PolicyCountOrderByAggregateInput = {
   kind?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -328,6 +348,7 @@ export type PolicyMaxOrderByAggregateInput = {
   kind?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -337,6 +358,7 @@ export type PolicyMinOrderByAggregateInput = {
   kind?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -346,8 +368,8 @@ export type PolicyScalarRelationFilter = {
   isNot?: Prisma.PolicyWhereInput
 }
 
-export type EnumPolicyKindFieldUpdateOperationsInput = {
-  set?: $Enums.PolicyKind
+export type NullableEnumPolicyKindFieldUpdateOperationsInput = {
+  set?: $Enums.PolicyKind | null
 }
 
 export type PolicyCreateNestedOneWithoutRevisionsInput = {
@@ -366,18 +388,20 @@ export type PolicyUpdateOneRequiredWithoutRevisionsNestedInput = {
 
 export type PolicyCreateWithoutRevisionsInput = {
   id?: string
-  kind: $Enums.PolicyKind
+  kind?: $Enums.PolicyKind | null
   slug: string
   title: string
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type PolicyUncheckedCreateWithoutRevisionsInput = {
   id?: string
-  kind: $Enums.PolicyKind
+  kind?: $Enums.PolicyKind | null
   slug: string
   title: string
+  isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -400,18 +424,20 @@ export type PolicyUpdateToOneWithWhereWithoutRevisionsInput = {
 
 export type PolicyUpdateWithoutRevisionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.EnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind
+  kind?: Prisma.NullableEnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type PolicyUncheckedUpdateWithoutRevisionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  kind?: Prisma.EnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind
+  kind?: Prisma.NullableEnumPolicyKindFieldUpdateOperationsInput | $Enums.PolicyKind | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -452,6 +478,7 @@ export type PolicySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   kind?: boolean
   slug?: boolean
   title?: boolean
+  isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   revisions?: boolean | Prisma.Policy$revisionsArgs<ExtArgs>
@@ -465,11 +492,12 @@ export type PolicySelectScalar = {
   kind?: boolean
   slug?: boolean
   title?: boolean
+  isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PolicyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "kind" | "slug" | "title" | "createdAt" | "updatedAt", ExtArgs["result"]["policy"]>
+export type PolicyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "kind" | "slug" | "title" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["policy"]>
 export type PolicyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   revisions?: boolean | Prisma.Policy$revisionsArgs<ExtArgs>
   _count?: boolean | Prisma.PolicyCountOutputTypeDefaultArgs<ExtArgs>
@@ -482,9 +510,10 @@ export type $PolicyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    kind: $Enums.PolicyKind
+    kind: $Enums.PolicyKind | null
     slug: string
     title: string
+    isActive: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["policy"]>
@@ -861,6 +890,7 @@ export interface PolicyFieldRefs {
   readonly kind: Prisma.FieldRef<"Policy", 'PolicyKind'>
   readonly slug: Prisma.FieldRef<"Policy", 'String'>
   readonly title: Prisma.FieldRef<"Policy", 'String'>
+  readonly isActive: Prisma.FieldRef<"Policy", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Policy", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Policy", 'DateTime'>
 }

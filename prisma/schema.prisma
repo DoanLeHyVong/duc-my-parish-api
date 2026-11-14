@@ -425,13 +425,15 @@ model AuthSession {
 
 model Policy {
   id          String           @id @default(cuid()) @db.VarChar(30)
-  kind        PolicyKind       @unique
+  kind        PolicyKind?      @unique
   slug        String           @unique @db.VarChar(100)
   title       String           @db.VarChar(180)
+  isActive    Boolean          @default(false)
   createdAt   DateTime         @default(now()) @db.DateTime(3)
   updatedAt   DateTime         @updatedAt @db.DateTime(3)
   revisions   PolicyRevision[]
 
+  @@index([isActive])
   @@map("policies")
 }
 

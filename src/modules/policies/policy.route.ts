@@ -11,7 +11,7 @@ import { authorize, Permission } from '../../middleware/authorize.js';
 
 const slugSchema = z.object({ slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(100) });
 const revisionParamsSchema = z.object({ slug: slugSchema.shape.slug, revision: z.coerce.number().int().positive() });
-const policySchema = z.object({ kind: z.enum(PolicyKind), slug: slugSchema.shape.slug, title: z.string().trim().min(2).max(180), contentHtml: z.string().min(1).max(500_000) });
+const policySchema = z.object({ kind: z.enum(PolicyKind).nullable(), slug: slugSchema.shape.slug, title: z.string().trim().min(2).max(180), contentHtml: z.string().min(1).max(500_000) });
 const draftSchema = policySchema.pick({ title: true, contentHtml: true });
 const publishSchema = z.object({ revision: z.number().int().positive() });
 
@@ -28,20 +28,49 @@ function cleanHtml(value: string): string {
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
 
 export const publicPolicyRouter = Router();
+publicPolicyRouter.get('/', asyncHandler(async (_request, response) => {
+  const items = await prisma.policy.findMany({
+    where: { isActive: true, revisions: { some: { status: PolicyRevisionStatus.PUBLISHED } } },
+    select: { slug: true, kind: true, title: true, updatedAt: true },
+    orderBy: { title: 'asc' },
+  });
+  response.setHeader('Cache-Control', 'no-store');
+  response.json({ data: items });
+}));
 publicPolicyRouter.get('/:slug', asyncHandler(async (request, response) => {
   const { slug } = slugSchema.parse(request.params);
-  const item = await prisma.policy.findUnique({ where: { slug }, include: { revisions: { where: { status: PolicyRevisionStatus.PUBLISHED }, orderBy: [{ publishedAt: 'desc' }, { revision: 'desc' }], take: 1, select: { revision: true, title: true, contentHtml: true, publishedAt: true } } } });
+  const item = await prisma.policy.findFirst({ where: { slug, isActive: true }, include: { revisions: { where: { status: PolicyRevisionStatus.PUBLISHED }, orderBy: [{ publishedAt: 'desc' }, { revision: 'desc' }], take: 1, select: { revision: true, title: true, contentHtml: true, publishedAt: true } } } });
   const published = item?.revisions[0];
   if (!item || !published) throw new ApiError(404, 'POLICY_NOT_FOUND', 'Không tìm thấy chính sách đã công bố.');
-  response.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
+  response.setHeader('Cache-Control', 'no-store');
   response.json({ data: { kind: item.kind, slug: item.slug, ...published } });
 }));
 
 export const policyAdminRouter = Router();
 policyAdminRouter.use(authenticate, authorize(Permission.POLICIES_MANAGE));
 
+policyAdminRouter.patch('/:slug/visibility', asyncHandler(async (request, response) => {
+  const { slug } = slugSchema.parse(request.params);
+  const { isActive } = z.object({ isActive: z.boolean() }).strict().parse(request.body);
+  const item = await prisma.$transaction(async (tx) => {
+    const policy = await tx.policy.findUnique({ where: { slug } });
+    if (!policy) throw new ApiError(404, 'POLICY_NOT_FOUND', 'Không tìm thấy chính sách.');
+    if (!isActive && policy.kind !== null) throw new ApiError(409, 'MANDATORY_POLICY', 'Không thể ẩn trang pháp lý bắt buộc khi chưa có trang thay thế được phê duyệt.');
+    if (isActive) {
+      const published = await tx.policyRevision.findFirst({ where: { policyId: policy.id, status: PolicyRevisionStatus.PUBLISHED } });
+      if (!published) throw new ApiError(409, 'POLICY_NOT_PUBLISHED', 'Hãy công bố một phiên bản trước khi bật hiển thị.');
+    }
+    if (policy.isActive === isActive) return policy;
+    const updated = await tx.policy.update({ where: { id: policy.id }, data: { isActive } });
+    await tx.auditLog.create({ data: { actorId: request.auth!.userId, action: isActive ? 'POLICY_ACTIVATED' : 'POLICY_HIDDEN', entityType: 'policy', entityId: policy.id } });
+    return updated;
+  });
+  response.setHeader('Cache-Control', 'no-store');
+  response.json({ data: item });
+}));
+
 policyAdminRouter.get('/', asyncHandler(async (_request, response) => {
-  const items = await prisma.policy.findMany({ orderBy: { kind: 'asc' }, include: { revisions: { orderBy: { revision: 'desc' }, select: { revision: true, status: true, title: true, createdAt: true, publishedAt: true } } } });
+  const items = await prisma.policy.findMany({ orderBy: { updatedAt: 'desc' }, include: { revisions: { orderBy: { revision: 'desc' }, select: { revision: true, status: true, title: true, createdAt: true, publishedAt: true } } } });
   response.json({ data: items });
 }));
 

@@ -7,7 +7,9 @@ const database = vi.hoisted(() => ({
   postFindMany: vi.fn(), categoryFindMany: vi.fn(), eventFindMany: vi.fn(), policyFindMany: vi.fn(),
   albumFindFirst: vi.fn(), albumFindMany: vi.fn(), categoryFindFirst: vi.fn(),
   homeSectionCreate: vi.fn(), mediaCreate: vi.fn(), cloudUpload: vi.fn(), cloudUrl: vi.fn(),
+  logError: vi.fn(),
 }));
+vi.mock('../src/config/logger.js', () => ({ logger: { error: database.logError } }));
 vi.mock('../src/config/env.js', () => ({ env: { CLIENT_URL: 'https://giaoxu.example.test' } }));
 vi.mock('../src/config/prisma.js', () => ({ prisma: {
   parishProfile: { create: database.parishProfileCreate, update: database.parishProfileUpdate },
@@ -51,7 +53,7 @@ it('builds sitemap from published CMS records and configured Web origin', async 
   const response = { type: vi.fn().mockReturnThis(), send };
   await publicController.sitemap({} as never, response as never);
   expect(database.postFindMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ status: 'PUBLISHED', deletedAt: null, publishedAt: { lte: expect.any(Date) } }) }));
-  expect(database.policyFindMany).toHaveBeenCalledWith(expect.objectContaining({ where: { revisions: { some: { status: 'PUBLISHED' } } } }));
+  expect(database.policyFindMany).toHaveBeenCalledWith(expect.objectContaining({ where: { isActive: true, revisions: { some: { status: 'PUBLISHED' } } } }));
   expect(send.mock.calls[0]?.[0]).toContain('https://giaoxu.example.test/posts/tin-moi');
   expect(send.mock.calls[0]?.[0]).toContain('https://giaoxu.example.test/privacy');
   expect(send.mock.calls[0]?.[0]).toContain('https://giaoxu.example.test/gallery/17');
@@ -87,6 +89,41 @@ it('uploads an image through the existing Cloudinary service', async () => {
   const result = await mediaService.upload([{ buffer: Buffer.from('synthetic'), originalname: 'test.png' }] as never, 'admin', 'branding');
   expect(result[0]).toMatchObject({ id: 9, secureUrl: 'https://cdn.example.test/image.png' });
   expect(database.cloudUpload).toHaveBeenCalledWith(expect.objectContaining({ folder: 'giao-xu-duc-my/branding' }), expect.any(Function));
+});
+
+it('returns a safe storage failure and logs only status metadata', async () => {
+  database.cloudUpload.mockImplementation((_options, callback) => ({ end: () => callback({ http_code: 401, message: 'secret=do-not-log' }, null) }));
+  await expect(mediaService.upload([{ buffer: Buffer.from('synthetic'), originalname: 'test.png' }] as never, 'admin'))
+    .rejects.toMatchObject({ statusCode: 503 });
+  expect(database.mediaCreate).not.toHaveBeenCalled();
+  expect(database.logError).toHaveBeenCalledWith(
+    { event: 'media_upload_failed', stage: 'cloudinary', providerStatus: 401 },
+    'Media upload failed',
+  );
+  expect(JSON.stringify(database.logError.mock.calls)).not.toContain('do-not-log');
+});
+
+it('distinguishes a metadata persistence failure without logging sensitive error text', async () => {
+  database.mediaCreate.mockRejectedValue({ code: 'P2003', message: 'secret=do-not-log' });
+  await expect(mediaService.upload([{ buffer: Buffer.from('synthetic'), originalname: 'test.png' }] as never, 'admin'))
+    .rejects.toMatchObject({ statusCode: 500 });
+  expect(database.logError).toHaveBeenCalledWith(
+    { event: 'media_upload_failed', stage: 'database', prismaCode: 'P2003' },
+    'Media metadata save failed',
+  );
+  expect(database.cloudDestroy).toHaveBeenCalledWith('asset', { resource_type: 'image' });
+  expect(JSON.stringify(database.logError.mock.calls)).not.toContain('do-not-log');
+});
+
+it('reports cleanup failure without leaking provider details', async () => {
+  database.mediaCreate.mockRejectedValue({ code: 'P2003', message: 'secret=do-not-log' });
+  database.cloudDestroy.mockRejectedValue(new Error('secret=do-not-log'));
+  await expect(mediaService.upload([{ buffer: Buffer.from('synthetic'), originalname: 'test.png' }] as never, 'admin'))
+    .rejects.toMatchObject({ statusCode: 500 });
+  expect(database.logError).toHaveBeenCalledWith(
+    { event: 'media_upload_cleanup_failed', stage: 'database' }, 'New media asset cleanup failed',
+  );
+  expect(JSON.stringify(database.logError.mock.calls)).not.toContain('do-not-log');
 });
 
 describe('CMS writes', () => {

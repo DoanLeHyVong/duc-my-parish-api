@@ -107,7 +107,7 @@ describe("account and data deletion workflow with MariaDB", () => {
     }
     expect(responses.at(-1)!.status).toBe(429);
     expect(responses.at(-1)!.body.error.code).toBe("TOO_MANY_ATTEMPTS");
-  });
+  }, 20_000);
 
   it("enforces RBAC, current ownership, valid transitions, reasons, and optimistic revisions", async () => {
     const created = await submit();

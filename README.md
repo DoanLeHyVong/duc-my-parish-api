@@ -108,3 +108,6 @@ C:\xampp\mysql\bin\mysqldump.exe -u root ducmy > ducmy-backup.sql
 ```
 
 Không commit file backup hoặc `.env`.
+# GitHub Actions email notifications
+
+**API CI** verifies source. **API Production Preparation** uploads the release and checks the backup gate; its success means **PREPARED**, not deployed. A separate, operator-controlled release and health check is required before describing the API as deployed. To receive both success and failure notices in your personal Gmail, configure your verified email in GitHub **Settings → Notifications → System → Actions**, select **Email**, and leave **Only notify for failed workflows** disabled. Watch this repository and check the Actions tab for runs you did not trigger. No webhook, SMTP service, or notification token is required.

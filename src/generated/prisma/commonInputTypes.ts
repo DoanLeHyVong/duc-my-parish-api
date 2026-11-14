@@ -355,21 +355,21 @@ export type EnumRoleCodeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumRoleCodeFilter<$PrismaModel>
 }
 
-export type EnumPolicyKindFilter<$PrismaModel = never> = {
-  equals?: $Enums.PolicyKind | Prisma.EnumPolicyKindFieldRefInput<$PrismaModel>
-  in?: $Enums.PolicyKind[]
-  notIn?: $Enums.PolicyKind[]
-  not?: Prisma.NestedEnumPolicyKindFilter<$PrismaModel> | $Enums.PolicyKind
+export type EnumPolicyKindNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PolicyKind | Prisma.EnumPolicyKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PolicyKind[] | null
+  notIn?: $Enums.PolicyKind[] | null
+  not?: Prisma.NestedEnumPolicyKindNullableFilter<$PrismaModel> | $Enums.PolicyKind | null
 }
 
-export type EnumPolicyKindWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.PolicyKind | Prisma.EnumPolicyKindFieldRefInput<$PrismaModel>
-  in?: $Enums.PolicyKind[]
-  notIn?: $Enums.PolicyKind[]
-  not?: Prisma.NestedEnumPolicyKindWithAggregatesFilter<$PrismaModel> | $Enums.PolicyKind
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumPolicyKindFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumPolicyKindFilter<$PrismaModel>
+export type EnumPolicyKindNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PolicyKind | Prisma.EnumPolicyKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PolicyKind[] | null
+  notIn?: $Enums.PolicyKind[] | null
+  not?: Prisma.NestedEnumPolicyKindNullableWithAggregatesFilter<$PrismaModel> | $Enums.PolicyKind | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPolicyKindNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPolicyKindNullableFilter<$PrismaModel>
 }
 
 export type EnumPolicyRevisionStatusFilter<$PrismaModel = never> = {
@@ -1002,21 +1002,21 @@ export type NestedEnumRoleCodeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumRoleCodeFilter<$PrismaModel>
 }
 
-export type NestedEnumPolicyKindFilter<$PrismaModel = never> = {
-  equals?: $Enums.PolicyKind | Prisma.EnumPolicyKindFieldRefInput<$PrismaModel>
-  in?: $Enums.PolicyKind[]
-  notIn?: $Enums.PolicyKind[]
-  not?: Prisma.NestedEnumPolicyKindFilter<$PrismaModel> | $Enums.PolicyKind
+export type NestedEnumPolicyKindNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PolicyKind | Prisma.EnumPolicyKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PolicyKind[] | null
+  notIn?: $Enums.PolicyKind[] | null
+  not?: Prisma.NestedEnumPolicyKindNullableFilter<$PrismaModel> | $Enums.PolicyKind | null
 }
 
-export type NestedEnumPolicyKindWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.PolicyKind | Prisma.EnumPolicyKindFieldRefInput<$PrismaModel>
-  in?: $Enums.PolicyKind[]
-  notIn?: $Enums.PolicyKind[]
-  not?: Prisma.NestedEnumPolicyKindWithAggregatesFilter<$PrismaModel> | $Enums.PolicyKind
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumPolicyKindFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumPolicyKindFilter<$PrismaModel>
+export type NestedEnumPolicyKindNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PolicyKind | Prisma.EnumPolicyKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PolicyKind[] | null
+  notIn?: $Enums.PolicyKind[] | null
+  not?: Prisma.NestedEnumPolicyKindNullableWithAggregatesFilter<$PrismaModel> | $Enums.PolicyKind | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPolicyKindNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPolicyKindNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumPolicyRevisionStatusFilter<$PrismaModel = never> = {

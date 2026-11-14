@@ -524,6 +524,7 @@ export const PolicyScalarFieldEnum = {
   kind: 'kind',
   slug: 'slug',
   title: 'title',
+  isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

@@ -44,7 +44,7 @@ export const publicController = {
       prisma.category.findMany({ where: { isActive: true }, select: { slug: true } }),
       prisma.event.findMany({ where: { isActive: true }, select: { slug: true } }),
       prisma.album.findMany({ where: { isPublished: true }, select: { id: true } }),
-      prisma.policy.findMany({ where: { revisions: { some: { status: 'PUBLISHED' } } }, select: { slug: true } }),
+      prisma.policy.findMany({ where: { isActive: true, revisions: { some: { status: 'PUBLISHED' } } }, select: { slug: true } }),
     ]);
     const policyPaths: Record<string, string> = { 'privacy-policy': '/privacy', 'terms-of-use': '/terms', support: '/support', 'data-request': '/data-request' };
     const paths = ['/', '/about', '/mass-schedule', '/events', '/gallery', '/contact',
@@ -52,7 +52,7 @@ export const publicController = {
       ...categories.map((category) => `/categories/${encodeURIComponent(category.slug)}`),
       ...events.map((event) => `/events/${encodeURIComponent(event.slug)}`),
       ...albums.map((album) => `/gallery/${album.id}`),
-      ...policies.map((policy) => policyPaths[policy.slug]).filter((path): path is string => Boolean(path))];
+        ...policies.map((policy) => policyPaths[policy.slug] ?? `/policies/${encodeURIComponent(policy.slug)}`)];
     const escapeXml = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
     res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map((path) => `<url><loc>${escapeXml(`${origin}${path}`)}</loc></url>`).join('')}</urlset>`);
   },

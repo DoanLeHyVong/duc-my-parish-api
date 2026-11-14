@@ -1,4 +1,4 @@
-name: Parish API production preparation
+name: API Production Preparation
 
 on:
   push:
